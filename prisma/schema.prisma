@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Destination {
+  id        String    @id @default(uuid())
+  name      String
+  packages  Package[]
+}
+
+model Package {
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  price         Int
+  destination   Destination   @relation(fields: [destinationId], references: [id])
+  destinationId String
+  surfLevels    SurfLevel[]   @relation("PackageSurfLevels")
+  bookings      Booking[]
+}
+
+model SurfLevel {
+  id        String    @id @default(uuid())
+  level     String
+  packages  Package[] @relation("PackageSurfLevels")
+}
+
+model Room {
+  id        String    @id @default(uuid())
+  name      String
+  description String
+  price     Int
+  capacity  Int
+  bookings  Booking[]
+}
+
+model AddOn {
+  id        String    @id @default(uuid())
+  name      String
+  price     Int
+  bookingAddOns BookingAddOn[]
+}
+
+model Traveller {
+  id        String    @id @default(uuid())
+  name      String
+  booking   Booking?  @relation(fields: [bookingId], references: [id])
+  bookingId String?
+}
+
+model Booking {
+  id           String         @id @default(uuid())
+  package      Package        @relation(fields: [packageId], references: [id])
+  packageId    String
+  room         Room           @relation(fields: [roomId], references: [id])
+  roomId       String
+  arrivalDate  DateTime
+  people       Int
+  travellers   Traveller[]
+  bookingAddOns BookingAddOn[]
+  insurance    Boolean
+  paymentType  String
+  total        Int
+  createdAt    DateTime @default(now())
+}
+
+model BookingAddOn {
+  id         String   @id @default(uuid())
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  String
+  addOn      AddOn    @relation(fields: [addOnId], references: [id])
+  addOnId    String
+} 

@@ -1,0 +1,96 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/app/_not-found/page-c62fc9b7f8e10c6d.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/css/7124652812d1cc56.css",
+      "static/chunks/app/layout-fb026c1f1ee84a50.js"
+    ],
+    "/confirmation/[id]/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/app/confirmation/[id]/page-7a613a17077f9d0c.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/972-571d7ab1ea37f828.js",
+      "static/chunks/app/page-14bd417c6009533b.js"
+    ],
+    "/checkout/1-package/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/53-65ea28456d6b8b2b.js",
+      "static/chunks/app/checkout/1-package/page-0b35f9a0d641ae64.js"
+    ],
+    "/checkout/layout": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/app/checkout/layout-3d953dd1e3df129a.js"
+    ],
+    "/checkout/2-dates/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/53-65ea28456d6b8b2b.js",
+      "static/chunks/app/checkout/2-dates/page-c5ded38f2b1e37ff.js"
+    ],
+    "/checkout/3-room/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/182-a71b6e6472b021a1.js",
+      "static/chunks/app/checkout/3-room/page-5dd44f3b7c99b6d6.js"
+    ],
+    "/checkout/6-payment/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/182-a71b6e6472b021a1.js",
+      "static/chunks/542-4e02dab7a8650cd1.js",
+      "static/chunks/app/checkout/6-payment/page-2689a5b3a5990e72.js"
+    ],
+    "/checkout/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/app/checkout/page-f0ef90fd35b7233b.js"
+    ],
+    "/checkout/5-travellers/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/app/checkout/5-travellers/page-4e70babff00992fa.js"
+    ],
+    "/checkout/4-add-ons/page": [
+      "static/chunks/webpack-41a9ee0a1d65a3d2.js",
+      "static/chunks/fd9d1056-7c2b4f7ffdc2d48d.js",
+      "static/chunks/117-c2006819a7c5e14b.js",
+      "static/chunks/main-app-7434e5874e962054.js",
+      "static/chunks/182-a71b6e6472b021a1.js",
+      "static/chunks/app/checkout/4-add-ons/page-dab60c629f5d97b6.js"
+    ]
+  }
+}
