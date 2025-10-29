@@ -1,15 +1,15 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/api/checkout/session/route": "app/api/checkout/session/route.js",
   "/api/availability/route": "app/api/availability/route.js",
   "/api/booking/route": "app/api/booking/route.js",
-  "/api/checkout/session/route": "app/api/checkout/session/route.js",
-  "/confirmation/[id]/page": "app/confirmation/[id]/page.js",
   "/page": "app/page.js",
-  "/checkout/1-package/page": "app/checkout/1-package/page.js",
+  "/confirmation/[id]/page": "app/confirmation/[id]/page.js",
   "/checkout/2-dates/page": "app/checkout/2-dates/page.js",
-  "/checkout/3-room/page": "app/checkout/3-room/page.js",
-  "/checkout/6-payment/page": "app/checkout/6-payment/page.js",
-  "/checkout/page": "app/checkout/page.js",
   "/checkout/5-travellers/page": "app/checkout/5-travellers/page.js",
-  "/checkout/4-add-ons/page": "app/checkout/4-add-ons/page.js"
+  "/checkout/page": "app/checkout/page.js",
+  "/checkout/6-payment/page": "app/checkout/6-payment/page.js",
+  "/checkout/1-package/page": "app/checkout/1-package/page.js",
+  "/checkout/4-add-ons/page": "app/checkout/4-add-ons/page.js",
+  "/checkout/3-room/page": "app/checkout/3-room/page.js"
 }
