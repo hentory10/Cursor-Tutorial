@@ -1,5 +1,4 @@
 import React from 'react';
-import type { Traveller } from '@prisma/client';
 import { content } from '../../../content';
 import { prisma } from '../../../prisma/client';
 
@@ -27,7 +26,7 @@ export default async function ConfirmationPage({ params }: { params: { id: strin
         <div className="mb-2">{content.confirmation.packageLabel}: {booking.package.name}</div>
         <div className="mb-2">{content.confirmation.roomLabel}: {booking.room.name}</div>
         <div className="mb-2">{content.confirmation.arrivalLabel}: {booking.arrivalDate.toLocaleDateString()}</div>
-        <div className="mb-2">{content.confirmation.travellersLabel}: {booking.travellers.map((t: Traveller) => t.name).join(', ')}</div>
+        <div className="mb-2">{content.confirmation.travellersLabel}: {booking.travellers.map((t: { name: string }) => t.name).join(', ')}</div>
         <div className="mb-2">{content.confirmation.totalLabel}: {booking.total} €</div>
       </div>
       <div className="mt-8 text-center text-gray-500">{content.confirmation.footer}</div>
