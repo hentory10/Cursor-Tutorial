@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type Package = { id: string; name: string; description: string; price: number; levels: string[] };
+type Package = { id: string; name: string; description?: string; price: number; levels: string[]; includedItems?: string[] };
 type Room = { id: string; name: string; description: string; price: number; capacity: number };
 type AddOn = { id: string; name: string; price: number; type: string; img: string; description: string };
 type Traveller = { name: string };
@@ -46,9 +46,56 @@ type State = {
 export const useStore = create<State>((set, get) => ({
   destinations: [{ id: '1', name: 'Bali' }],
   packages: [
-    { id: '1', name: 'Beginner Bliss', description: 'Perfect for first-timers.', price: 600, levels: ['beginner'] },
-    { id: '2', name: 'Intermediate Escape', description: 'For those ready to progress.', price: 800, levels: ['intermediate', 'advanced'] },
-    { id: '3', name: 'Advanced Adventure', description: 'Chase the biggest waves.', price: 1000, levels: ['advanced'] },
+    {
+      id: '1',
+      name: 'Surf camp, Level 1-3',
+      price: 497,
+      levels: ['beginner', 'intermediate', 'advanced'],
+      includedItems: [
+        '7 nights accommodation',
+        '7 breakfasts, 7 lunches, and 5 dinners',
+        'Surf lessons 5 x 2 hours, L1, L2 or L3',
+        '6 days free use of surf equipment subjected to surf conditions',
+        'Surf theory',
+        '1 video analysis session',
+        'Transport to surf lessons',
+        '3 cultural excursion',
+        'Exclusive Rooftop Dinner & Live Music',
+        'Airport transfer',
+      ],
+    },
+    {
+      id: '2',
+      name: 'Tamazirt Life',
+      price: 747,
+      levels: ['beginner','intermediate', 'advanced'],
+      includedItems: [
+        '7 nights accommodation',
+        '7 breakfasts, 7 lunches, and 5 dinners',
+        'Surf lessons 3 x 2 hours, L1, L2 or L3',
+        '3 days free use of surf equipment subjected to surf conditions',
+        'Surf theory',
+        '1 video analysis session',
+        'Transport to surf lessons',
+        '3 cultural excursion',
+        '2 x Moroccan cooking class',
+        'Traditional hammam',
+        'Tamazirt Day',
+        'Airport transfer',
+      ],
+    },
+    {
+      id: '3',
+      name: 'Essential Pack',
+      price: 347,
+      levels: ['beginner', 'intermediate', 'advanced'],
+      includedItems: [
+        '7 nights accommodation',
+        '7 breakfasts',
+        '5 lunches',
+        '5 dinners',
+      ],
+    },
   ],
   rooms: [
     { id: '1', name: 'Room A1 - MoonLight', description: 'Room A1 in MoonLight.', price: 50, capacity: 2, img: '/images/room1.jpg' },

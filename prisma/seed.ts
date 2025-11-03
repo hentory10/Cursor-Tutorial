@@ -15,11 +15,11 @@ async function main() {
   // Packages
   const pkg1 = await prisma.package.create({
     data: {
-      name: 'Beginner Bliss',
-      description: 'Perfect for first-timers.',
-      price: 600,
+      name: 'SURF CAMP PACKAGE',
+      description: 'This is for you who are excited to surf tropical waves and progress in warm, consistent conditions, no matter your surf level.',
+      price: 497,
       destinationId: bali.id,
-      surfLevels: { connect: [{ id: beginner.id }] },
+      surfLevels: { connect: [{ id: beginner.id }, { id: intermediate.id }, { id: advanced.id }] },
     },
   });
   const pkg2 = await prisma.package.create({

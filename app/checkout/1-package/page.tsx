@@ -38,20 +38,11 @@ export default function PackageStep() {
     router.push('/checkout/2-dates');
   };
 
-  const includedItems = [
-    '7 nights accommodation',
-    '7 breakfasts',
-    '5 dinners',
-    'Surf lessons 5 x 2 hours, L1, L2 or L3',
-    '6 days free use of surf equipment subjected to surf conditions',
-    'Surf theory',
-    '1 video analysis session (level 3 only)',
-    'Transport to surf lessons',
-  ];
+  // Per-package included items now live in store packages (pkg.includedItems)
 
   return (
     <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
-      <div className="w-full md:w-[70%] py-8">
+        <div className="w-full md:w-[70%] py-8">
         <div className="w-full mb-8" ref={durationRef}>
           <div className="mb-6">
             <div className="font-bold text-2xl mb-2">Select duration</div>
@@ -90,7 +81,7 @@ export default function PackageStep() {
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full">
                   <div className="flex flex-col min-w-[220px]">
                     <div className="text-lg font-bold mb-1">{pkg.name}</div>
-                    <div className="text-sm text-gray-600 mb-2">{pkg.description}</div>
+                    {/* description removed per request */}
                     <div className="text-lapoint-red font-bold">From EUR {pkg.price}</div>
                   </div>
                   <div className="flex items-center gap-2 ml-auto">
@@ -134,7 +125,7 @@ export default function PackageStep() {
                   <div className="w-full mt-2 border-t pt-4">
                     <div className="font-semibold mb-2 text-base">Included per week</div>
                     <ul className="space-y-2">
-                      {includedItems.map((item, i) => (
+                      {(pkg.includedItems || []).map((item, i) => (
                         <li key={i} className="flex items-start gap-2 text-base">
                           <svg className="mt-1 flex-shrink-0" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#111"/><path d="M6 10.5L9 13.5L14 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           <span>{item}</span>
@@ -147,10 +138,10 @@ export default function PackageStep() {
             ))}
           </div>
         </form>
-      </div>
-      <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
-        <BookingSummary buttonLabel="DATE SELECTION →" onButtonClick={handleNext} />
-      </div>
+        </div>
+        <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
+          <BookingSummary buttonLabel="DATE SELECTION →" onButtonClick={handleNext} />
+        </div>
     </div>
   );
 } 
