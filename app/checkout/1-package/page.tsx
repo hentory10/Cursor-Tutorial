@@ -30,6 +30,13 @@ export default function PackageStep() {
     }
   }, []);
 
+  useEffect(() => {
+    // Ensure '1 week' is selected by default
+    if (duration !== '1w') {
+      setDuration('1w');
+    }
+  }, [duration, setDuration]);
+
   const handleNext = () => {
     if (!selectedPackage) {
       setError(content.validation.packageRequired);
@@ -47,17 +54,21 @@ export default function PackageStep() {
           <div className="mb-6">
             <div className="font-bold text-2xl mb-2">Select duration</div>
             <div className="flex gap-3 flex-wrap">
-              {DURATIONS.map(d => (
-                <button
-                  key={d.value}
-                  type="button"
-                  className={`px-6 py-2 rounded-lg border font-semibold transition-all ${duration === d.value ? 'bg-lapoint-red text-white border-lapoint-red' : 'bg-white text-lapoint-dark border-lapoint-border hover:bg-lapoint-yellow'}`}
-                  onClick={() => setDuration(d.value)}
-                  aria-pressed={duration === d.value}
-                >
-                  {d.label}
-                </button>
-              ))}
+              {DURATIONS.map(d => {
+                const isDisabled = d.value !== '1w';
+                return (
+                  <button
+                    key={d.value}
+                    type="button"
+                    className={`px-6 py-2 rounded-lg border font-semibold transition-all ${duration === d.value ? 'bg-lapoint-red text-white border-lapoint-red' : 'bg-white text-lapoint-dark border-lapoint-border hover:bg-lapoint-yellow'} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={() => !isDisabled && setDuration(d.value)}
+                    disabled={isDisabled}
+                    aria-pressed={duration === d.value}
+                  >
+                    {d.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
           <div className="w-full mb-4">
