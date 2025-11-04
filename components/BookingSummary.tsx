@@ -6,17 +6,70 @@ import { content } from '../content';
 import { usePathname } from 'next/navigation';
 
 export default function BookingSummary({ buttonLabel = 'ROOM SELECTION →', onButtonClick }: { buttonLabel?: string; onButtonClick?: () => void }) {
-  const { summary, selectedPackage, arrivalDate, selectedRoom, people, selectedAddOns, addOns, rooms, roomAssignments, addOnCounts } = useStore();
+  const { summary, selectedPackage, arrivalDate, selectedRoom, people, selectedAddOns, addOns, rooms, roomAssignments, addOnCounts, duration } = useStore();
   const pathname = usePathname();
   const [buttonEnabled, setButtonEnabled] = React.useState(false);
 
-  // Format dates for display
+  // Duration mapping (same as 2-dates page)
+  const DURATIONS: Record<string, number> = {
+    '4d': 4,
+    '1w': 7,
+    '2w': 14,
+    '3w': 21,
+    '4w': 28,
+  };
+
+  // Format dates for display (using same logic as 2-dates page)
   let dateLabel = '-';
   if (arrivalDate && selectedPackage) {
-    const checkIn = new Date(arrivalDate);
-    const checkOut = new Date(checkIn);
-    checkOut.setDate(checkIn.getDate() + 7);
-    dateLabel = `1 week, ${checkIn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${checkOut.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    const days = DURATIONS[duration] || 7;
+    
+    // Parse the date string directly to avoid any timezone issues
+    const [checkInYear, checkInMonth, checkInDay] = arrivalDate.split('-').map(Number);
+    
+    // Calculate checkout date by working with the date string directly
+    let checkOutYear = checkInYear;
+    let checkOutMonth = checkInMonth;
+    let checkOutDay = checkInDay;
+    
+    if (days === 4) {
+      // Add 4 days
+      checkOutDay += 4;
+      // Handle month overflow
+      const daysInMonth = new Date(checkOutYear, checkOutMonth, 0).getDate();
+      if (checkOutDay > daysInMonth) {
+        checkOutDay -= daysInMonth;
+        checkOutMonth += 1;
+        if (checkOutMonth > 12) {
+          checkOutMonth = 1;
+          checkOutYear += 1;
+        }
+      }
+    } else {
+      // For week-based durations, add days then snap to next Monday
+      checkOutDay += days;
+      // Handle month overflow
+      let tempDate = new Date(checkOutYear, checkOutMonth - 1, checkOutDay);
+      // Snap to next Monday if needed
+      const dayOfWeek = tempDate.getDay();
+      if (dayOfWeek !== 1) {
+        const diffToMonday = (8 - dayOfWeek) % 7;
+        tempDate.setDate(tempDate.getDate() + diffToMonday);
+      }
+      checkOutYear = tempDate.getFullYear();
+      checkOutMonth = tempDate.getMonth() + 1;
+      checkOutDay = tempDate.getDate();
+    }
+
+    // Format duration label
+    const durationLabel = days === 4 ? '4 days' : days === 7 ? '1 week' : `${days} nights`;
+    
+    // Format dates directly from the date components (no Date object conversion)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const checkInFormatted = `${checkInDay} ${months[checkInMonth - 1]}`;
+    const checkOutFormatted = `${checkOutDay} ${months[checkOutMonth - 1]} ${checkOutYear}`;
+    
+    dateLabel = `${durationLabel}, ${checkInFormatted} - ${checkOutFormatted}`;
   }
 
   // Dynamic button enabling based on current step
