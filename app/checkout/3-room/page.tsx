@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import BookingSummary from "../../../components/BookingSummary";    
 import { useStore } from "../../../store/booking";
 import { useRouter } from "next/navigation";
 
-const dormRooms = [
+const oubahaRooms = [
   {
     id: "1",
-    name: "Room A1 - MoonLight",
-    price: 50,
+    name: "Tamazirt room - Oubaha",
+    price: 140,
     img: "/images/room1.jpg",
     available: true,
     booked: false,
   },
   {
     id: "2",
-    name: "Room A2 - MoonLight",
+    name: "Triple room - Oubaha",
     price: 0,
     img: "/images/room2.jpg",
     available: true,
@@ -25,7 +25,7 @@ const dormRooms = [
   },
   {
     id: "3",
-    name: "Room B1 - MoonLight",
+    name: "Double room - Oubaha",
     price: 0,
     img: "/images/room3.jpg",
     available: true,
@@ -33,48 +33,46 @@ const dormRooms = [
   },
   {
     id: "4",
-    name: "Room B2 - MoonLight",
+    name: "Twin room - Oubaha",
     price: 0,
     img: "/images/room4.jpg",
-    available: true,
-    booked: false,
-  },
-  {
-    id: "5",
-    name: "Room C1 - MoonLight",
-    price: 0,
-    img: "/images/room5.jpg",
-    available: true,
-    booked: false,
-  },
-  {
-    id: "6",
-    name: "Room C2 - MoonLight",
-    price: 0,
-    img: "/images/room6.jpg",
     available: true,
     booked: false,
   },
 ];
 
-const doubleRooms = [
+const bigdiRooms = [
   {
-    id: "2", // Private Double
-    name: "Private Double",
+    id: "5",
+    name: "Akal room - Bigdi",
     price: 70,
-    img: "/images/room4.jpg",
+    img: "/images/akalroom.webp",
     available: true,
     booked: false,
-    notBookable: false,
   },
   {
-    id: "3", // Ocean Suite
-    name: "Ocean Suite",
-    price: 150,
-    img: "/images/room5.jpg",
+    id: "6",
+    name: "Ayour room - Bigdi",
+    price: 0,
+    img: "/images/ayourroom.webp",
     available: true,
     booked: false,
-    notBookable: false,
+  },
+  {
+    id: "7",
+    name: "Tafokt room - Bigdi",
+    price: 70,
+    img: "/images/room1.jpg",
+    available: true,
+    booked: false,
+  },
+  {
+    id: "8",
+    name: "Amlal room - Bigdi",
+    price: 0,
+    img: "/images/room2.jpg",
+    available: true,
+    booked: false,
   },
 ];
 
@@ -115,42 +113,116 @@ export default function RoomStep() {
             <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
           </div>
         </div>
-        {/* Dorms and shared rooms */}
+        {/* Oubaha Rooms */}
         <div className="mb-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {dormRooms.map((room) => {
+          <h3 className="text-xl font-bold mb-4">DRIFTLINE OUBAHA</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {oubahaRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
               return (
                 <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative`}>
                   <div className="absolute top-0 left-0 w-full bg-lapoint-red text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl">
                     Room is not bookable for 1 person
                   </div>
-                  <Image src={room.img} alt={room.name} width={600} height={400} quality={100} className="w-full h-40 object-cover" />
+                  <Image src={room.img} alt={room.name} width={600} height={400} quality={100} className="w-full h-56 object-cover" />
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
-                      <div className="font-semibold text-base mb-1">{room.name}</div>
-                      <div className="text-lapoint-red font-bold mb-2">+ EUR {room.price}</div>
+                      <div className="font-semibold text-base mb-2">{room.name}</div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-lapoint-red font-bold">+ EUR {room.price}</div>
+                        <div className="text-sm text-gray-600">Number of people</div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <button
+                          type="button"
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                        >
+                          View room
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            aria-label="Decrease number of people"
+                            onClick={() => handleChange(room.id, -1)}
+                            disabled={assigned === 0}
+                          >
+                            –
+                          </button>
+                          <span className="w-8 text-center font-bold">{assigned}</span>
+                          <button
+                            type="button"
+                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            aria-label="Increase number of people"
+                            onClick={() => handleChange(room.id, 1)}
+                            disabled={assigned >= 2 || totalAssigned >= maxPeople}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-end mt-2 gap-2">
-                      <button
-                        type="button"
-                        className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50"
-                        aria-label="Decrease number of people"
-                        onClick={() => handleChange(room.id, -1)}
-                        disabled={assigned === 0}
-                      >
-                        –
-                      </button>
-                      <span className="w-8 text-center font-bold">{assigned}</span>
-                      <button
-                        type="button"
-                        className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50"
-                        aria-label="Increase number of people"
-                        onClick={() => handleChange(room.id, 1)}
-                        disabled={assigned >= 2 || totalAssigned >= maxPeople}
-                      >
-                        +
-                      </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* Bigdi Rooms */}
+        <div className="mb-10">
+          <h3 className="text-xl font-bold mb-4">DRIFTLINE BIGDI</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {bigdiRooms.map((room) => {
+              const assigned = roomAssignments[room.id] || 0;
+              return (
+                <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative`}>
+                  <div className="absolute top-0 left-0 w-full bg-lapoint-red text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl">
+                    Room is not bookable for 1 person
+                  </div>
+                  <Image src={room.img} alt={room.name} width={600} height={400} quality={100} className="w-full h-56 object-cover" />
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="font-semibold text-base mb-2">{room.name}</div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-lapoint-red font-bold">+ EUR {room.price}</div>
+                        <div className="text-sm text-gray-600">Number of people</div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <button
+                          type="button"
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                        >
+                          View room
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            aria-label="Decrease number of people"
+                            onClick={() => handleChange(room.id, -1)}
+                            disabled={assigned === 0}
+                          >
+                            –
+                          </button>
+                          <span className="w-8 text-center font-bold">{assigned}</span>
+                          <button
+                            type="button"
+                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            aria-label="Increase number of people"
+                            onClick={() => handleChange(room.id, 1)}
+                            disabled={assigned >= 2 || totalAssigned >= maxPeople}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

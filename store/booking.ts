@@ -98,12 +98,14 @@ export const useStore = create<State>((set, get) => ({
     },
   ],
   rooms: [
-    { id: '1', name: 'Room A1 - MoonLight', description: 'Room A1 in MoonLight.', price: 50, capacity: 2, img: '/images/room1.jpg' },
-    { id: '2', name: 'Room A2 - MoonLight', description: 'Room A2 in MoonLight.', price: 0, capacity: 2, img: '/images/room2.jpg' },
-    { id: '3', name: 'Room B1 - MoonLight', description: 'Room B1 in MoonLight.', price: 0, capacity: 2, img: '/images/room3.jpg' },
-    { id: '4', name: 'Room B2 - MoonLight', description: 'Room B2 in MoonLight.', price: 0, capacity: 2, img: '/images/room4.jpg' },
-    { id: '5', name: 'Room C1 - MoonLight', description: 'Room C1 in MoonLight.', price: 0, capacity: 2, img: '/images/room5.jpg' },
-    { id: '6', name: 'Room C2 - MoonLight', description: 'Room C2 in MoonLight.', price: 0, capacity: 2, img: '/images/room6.jpg' },
+    { id: '1', name: 'Tamazirt room - Oubaha', description: 'Tamazirt room - Oubaha', price: 140, capacity: 2, img: '/images/room1.jpg' },
+    { id: '2', name: 'Triple room - Oubaha', description: 'Triple room - Oubaha', price: 0, capacity: 2, img: '/images/room2.jpg' },
+    { id: '3', name: 'Double room - Oubaha', description: 'Double room - Oubaha', price: 0, capacity: 2, img: '/images/room3.jpg' },
+    { id: '4', name: 'Twin room - Oubaha', description: 'Twin room - Oubaha', price: 0, capacity: 2, img: '/images/room4.jpg' },
+    { id: '5', name: 'Akal room - Bigdi', description: 'Akal room - Bigdi', price: 70, capacity: 2, img: '/images/akalroom.webp' },
+    { id: '6', name: 'Ayour room - Bigdi', description: 'Ayour room - Bigdi', price: 0, capacity: 2, img: '/images/ayourroom.webp' },
+    { id: '7', name: 'Tafokt room - Bigdi', description: 'Tafokt room - Bigdi', price: 70, capacity: 2, img: '/images/room1.jpg' },
+    { id: '8', name: 'Amlal room - Bigdi', description: 'Amlal room - Bigdi', price: 0, capacity: 2, img: '/images/room2.jpg' },
   ],
   addOns: [
     { id: '1', name: 'Transfer 1 person 1 way from DPS airport', price: 22, type: 'per-person', img: '/images/IM.jpg', description: 'Transfer from DPS airport to camp. Price per person. View more.' },
@@ -175,11 +177,20 @@ export const useStore = create<State>((set, get) => ({
 // Price calculation and forceFullPayment logic
 useStore.subscribe((state) => {
   const pkg = state.selectedPackage;
-  const room = state.selectedRoom;
+  // Calculate room prices based on roomAssignments (multiple rooms can be selected)
+  let roomTotal = 0;
+  Object.entries(state.roomAssignments).forEach(([roomId, assignedPeople]) => {
+    if (assignedPeople > 0) {
+      const room = state.rooms.find(r => r.id === roomId);
+      if (room) {
+        roomTotal += room.price * assignedPeople;
+      }
+    }
+  });
   // const nights = 7;
   let subtotal = 0;
   if (pkg) subtotal += pkg.price * state.people;
-  if (room) subtotal += room.price * state.people;
+  subtotal += roomTotal;
   subtotal += state.addOns.reduce((sum, addOn) => {
     if (addOn.type === 'per-person') {
       const count = state.addOnCounts[addOn.id] || 0;

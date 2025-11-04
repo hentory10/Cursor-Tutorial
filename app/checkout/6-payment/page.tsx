@@ -5,20 +5,108 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useStore } from "../../../store/booking";
 import ProgressBar from "../../../components/ProgressBar";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function PaymentStep() {
   const [method, setMethod] = useState("card");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [saveDetails, setSaveDetails] = useState(false);
   const [paypalSuccess, setPaypalSuccess] = useState(false);
-  const { summary } = useStore();
+  const [paypalError, setPaypalError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const { 
+    summary, 
+    selectedPackage, 
+    arrivalDate, 
+    roomAssignments, 
+    travellers, 
+    selectedAddOns, 
+    addOnCounts, 
+    insurance, 
+    paymentType, 
+    forceFullPayment, 
+    people, 
+    rooms, 
+    addOns 
+  } = useStore();
+  const router = useRouter();
   const total = summary?.total || 1144;
   const campName = "Lapoint Canggu";
+
+  // Handle successful PayPal payment - create booking
+  const handlePayPalSuccess = async (orderId: string) => {
+    setProcessing(true);
+    setPaypalError(null);
+
+    try {
+      // Get the first assigned room (or use a default)
+      const assignedRooms = Object.entries(roomAssignments)
+        .filter(([_, count]) => count > 0)
+        .map(([roomId]) => rooms.find(r => r.id === roomId))
+        .filter(Boolean);
+      
+      const selectedRoom = assignedRooms[0] || rooms[0];
+
+      // Prepare booking data
+      const bookingData = {
+        packageId: selectedPackage?.id || "1",
+        roomId: selectedRoom?.id || "1",
+        arrivalDate: arrivalDate || new Date().toISOString(),
+        people: people || 1,
+        travellers: (travellers || []).map((t: { name: string }) => ({
+          name: t.name || 'Guest',
+        })),
+        total: total,
+        insurance: insurance || false,
+        paymentType: forceFullPayment ? 'full' : (paymentType || 'full'),
+        addOns: selectedAddOns.map(addOnId => ({
+          addOnId: addOnId,
+        })),
+      };
+
+      // Create booking in database
+      const response = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create booking');
+      }
+
+      const data = await response.json();
+      setPaypalSuccess(true);
+      
+      // Redirect to confirmation page after a short delay
+      setTimeout(() => {
+        router.push(`/confirmation/${data.id}`);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Booking creation error:', error);
+      setPaypalError(
+        error instanceof Error 
+          ? `Payment successful, but booking failed: ${error.message}. Please contact support with order ID: ${orderId}`
+          : 'Payment successful but failed to create booking. Please contact support.'
+      );
+      setProcessing(false);
+    }
+  };
 
   return (
     <PayPalScriptProvider options={{ clientId: "sb", currency: "EUR" }}>
       <div className="min-h-screen bg-[#FFF9E8]">
         <div className="max-w-2xl mx-auto px-4 pt-8 pb-16">
+          {/* Test Mode Banner */}
+          <div className="bg-yellow-200 border border-yellow-400 rounded-lg p-3 mb-6 text-center">
+            <p className="font-bold text-yellow-900">🧪 TEST MODE - PayPal Sandbox</p>
+            <p className="text-sm text-yellow-800 mt-1">
+              Use PayPal test accounts to test payments. No real money will be charged.
+            </p>
+          </div>
+
           {/* Removed ProgressBar and camp name to avoid duplication */}
           <div className="bg-white rounded-2xl border border-gray-300 p-6 mb-8 max-w-md mx-auto">
             {/* Payment method selection */}
@@ -72,12 +160,43 @@ export default function PaymentStep() {
                       });
                     }}
                     onApprove={async (_data: Record<string, unknown>, actions: any) => {
-                      await actions.order.capture();
-                      setPaypalSuccess(true);
+                      try {
+                        const order = await actions.order?.capture();
+                        if (order && order.id) {
+                          await handlePayPalSuccess(order.id);
+                        } else {
+                          throw new Error('Order capture failed');
+                        }
+                      } catch (error) {
+                        console.error('PayPal payment error:', error);
+                        setPaypalError('Payment failed. Please try again.');
+                        setProcessing(false);
+                      }
+                    }}
+                    onError={(err: Record<string, unknown>) => {
+                      console.error('PayPal error:', err);
+                      setPaypalError('Payment error occurred. Please try again.');
+                      setProcessing(false);
+                    }}
+                    onCancel={() => {
+                      setPaypalError(null);
+                      setProcessing(false);
                     }}
                   />
+                  {processing && (
+                    <div className="text-blue-600 font-bold mt-4 text-center">
+                      ⏳ Processing your booking...
+                    </div>
+                  )}
                   {paypalSuccess && (
-                    <div className="text-green-600 font-bold mt-4">Payment successful! Thank you for your booking.</div>
+                    <div className="text-green-600 font-bold mt-4 text-center">
+                      ✅ Payment successful! Redirecting to confirmation...
+                    </div>
+                  )}
+                  {paypalError && (
+                    <div className="text-red-600 font-bold mt-4 text-center p-3 bg-red-50 rounded">
+                      ❌ {paypalError}
+                    </div>
                   )}
                 </div>
               )}
