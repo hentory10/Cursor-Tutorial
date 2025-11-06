@@ -57,8 +57,9 @@ function generateUUID() {
 }
 
 export async function POST(req: NextRequest) {
+  let data: any = null;
   try {
-    const data = await req.json();
+    data = await req.json();
 
     // Extract booking data
     const {
@@ -222,7 +223,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Booking creation error:', error);
     console.error('Error details:', JSON.stringify(error, null, 2));
-    console.error('Received data:', JSON.stringify(data, null, 2));
+    if (data) {
+      console.error('Received data:', JSON.stringify(data, null, 2));
+    } else {
+      console.error('Failed to parse request data');
+    }
     return NextResponse.json(
       { 
         error: 'Failed to create booking', 
