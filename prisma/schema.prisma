@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Destination {
@@ -49,24 +49,45 @@ model AddOn {
 model Traveller {
   id        String    @id @default(uuid())
   name      String
+  firstName String?
+  lastName  String?
+  email     String?
+  year      String?
+  month     String?
+  day       String?
+  country   String?
+  phone     String?
+  surfLevel String?
+  gender    String?
   booking   Booking?  @relation(fields: [bookingId], references: [id])
   bookingId String?
 }
 
 model Booking {
-  id           String         @id @default(uuid())
-  package      Package        @relation(fields: [packageId], references: [id])
-  packageId    String
-  room         Room           @relation(fields: [roomId], references: [id])
-  roomId       String
-  arrivalDate  DateTime
-  people       Int
-  travellers   Traveller[]
-  bookingAddOns BookingAddOn[]
-  insurance    Boolean
-  paymentType  String
-  total        Int
-  createdAt    DateTime @default(now())
+  id             String         @id @default(uuid())
+  package        Package        @relation(fields: [packageId], references: [id])
+  packageId      String
+  packageName    String?
+  room           Room           @relation(fields: [roomId], references: [id])
+  roomId         String
+  roomName       String?
+  arrivalDate    DateTime
+  checkoutDate   DateTime?
+  people         Int
+  guestFullName  String?
+  guestAge       Int?
+  guestCountry   String?
+  guestPhone     String?
+  guestEmail     String?
+  surfLevel      String?
+  gender         String?
+  travellers     Traveller[]
+  bookingAddOns  BookingAddOn[]
+  insurance      Boolean
+  airportTransfer Boolean       @default(false)
+  paymentType    String
+  total          Int
+  createdAt      DateTime       @default(now())
 }
 
 model BookingAddOn {

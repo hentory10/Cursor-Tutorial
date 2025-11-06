@@ -18,6 +18,7 @@ export default function PaymentStep() {
     summary, 
     selectedPackage, 
     arrivalDate, 
+    duration,
     roomAssignments, 
     travellers, 
     selectedAddOns, 
@@ -47,17 +48,70 @@ export default function PaymentStep() {
       
       const selectedRoom = assignedRooms[0] || rooms[0];
 
-      // Prepare booking data
+      // Calculate checkout date based on arrival date and duration
+      const DURATIONS: Record<string, number> = {
+        '4d': 4, '1w': 7, '2w': 14, '3w': 21, '4w': 28,
+      };
+      const days = DURATIONS[duration] || 7;
+      const arrival = new Date(arrivalDate || new Date().toISOString());
+      const checkout = new Date(arrival);
+      checkout.setDate(checkout.getDate() + days);
+
+      // Check if airport transfer is selected
+      const airportTransfer = selectedAddOns.includes('1'); // AddOn ID '1' is airport transfer
+
+      // Get primary guest (first traveller)
+      const primaryGuest = travellers && travellers.length > 0 ? travellers[0] : null;
+      
+      // Calculate age from date of birth
+      let guestAge: number | null = null;
+      if (primaryGuest?.year && primaryGuest?.month && primaryGuest?.day) {
+        const birthDate = new Date(
+          parseInt(primaryGuest.year),
+          parseInt(primaryGuest.month) - 1,
+          parseInt(primaryGuest.day)
+        );
+        const today = new Date();
+        guestAge = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          guestAge--;
+        }
+      }
+
+      // Prepare booking data with all required fields
       const bookingData = {
         packageId: selectedPackage?.id || "1",
+        packageName: selectedPackage?.name || '',
         roomId: selectedRoom?.id || "1",
+        roomName: selectedRoom?.name || '',
         arrivalDate: arrivalDate || new Date().toISOString(),
+        checkoutDate: checkout.toISOString(),
         people: people || 1,
-        travellers: (travellers || []).map((t: { name: string }) => ({
-          name: t.name || 'Guest',
+        guestFullName: primaryGuest ? `${primaryGuest.firstName || ''} ${primaryGuest.lastName || ''}`.trim() : null,
+        guestAge: guestAge,
+        guestCountry: primaryGuest?.country || null,
+        guestPhone: primaryGuest?.phone || primaryGuest?.mobile || null,
+        guestEmail: primaryGuest?.email || null,
+        surfLevel: primaryGuest?.surfLevel || null,
+        gender: primaryGuest?.gender || null,
+        travellers: (travellers || []).map((t: any) => ({
+          name: t.name || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'Guest',
+          firstName: t.firstName,
+          lastName: t.lastName,
+          email: t.email,
+          year: t.year,
+          month: t.month,
+          day: t.day,
+          country: t.country,
+          phone: t.phone || t.mobile,
+          mobile: t.mobile || t.phone,
+          surfLevel: t.surfLevel,
+          gender: t.gender,
         })),
         total: total,
         insurance: insurance || false,
+        airportTransfer: airportTransfer,
         paymentType: forceFullPayment ? 'full' : (paymentType || 'full'),
         addOns: selectedAddOns.map(addOnId => ({
           addOnId: addOnId,
@@ -73,7 +127,9 @@ export default function PaymentStep() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to create booking');
+        console.error('Booking API error response:', errorData);
+        console.error('Booking data sent:', bookingData);
+        throw new Error(errorData.details || errorData.error || 'Failed to create booking');
       }
 
       const data = await response.json();

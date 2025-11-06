@@ -3,7 +3,20 @@ import { create } from 'zustand';
 type Package = { id: string; name: string; description?: string; price: number; levels: string[]; includedItems?: string[] };
 type Room = { id: string; name: string; description: string; price: number; capacity: number };
 type AddOn = { id: string; name: string; price: number; type: string; img: string; description: string };
-type Traveller = { name: string };
+type Traveller = { 
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  year?: string;
+  month?: string;
+  day?: string;
+  country?: string;
+  mobile?: string;
+  phone?: string;
+  surfLevel?: string;
+  gender?: string;
+};
 
 type State = {
   destinations: { id: string; name: string }[];
