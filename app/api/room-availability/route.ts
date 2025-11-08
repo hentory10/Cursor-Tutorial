@@ -239,7 +239,10 @@ export async function GET(req: NextRequest) {
     // Determine total beds based on room ID
     // Room ID "2" = Triple room (3 beds)
     // Room ID "4" = Twin room (2 beds)
-    const totalBeds = roomId === "2" ? 3 : roomId === "4" ? 2 : 2; // Default to 2 for other rooms
+    // Room ID "6" = Ayour room - Bigdi (2 beds)
+    // Room ID "8" = Amlal room - Bigdi (2 beds)
+    const totalBeds = roomId === "2" ? 3 : 
+                      (roomId === "4" || roomId === "6" || roomId === "8") ? 2 : 2; // Default to 2 for other rooms
     const availableBeds = Math.max(0, totalBeds - bookedBeds);
     const isFullyBooked = bookedBeds >= totalBeds;
 

@@ -89,10 +89,24 @@ export default function RoomStep() {
     availableBeds: number;
     isFullyBooked: boolean;
   } | null>(null);
+  const [ayourRoomAvailability, setAyourRoomAvailability] = useState<{
+    bookedBeds: number;
+    availableBeds: number;
+    isFullyBooked: boolean;
+  } | null>(null);
+  const [amlalRoomAvailability, setAmlalRoomAvailability] = useState<{
+    bookedBeds: number;
+    availableBeds: number;
+    isFullyBooked: boolean;
+  } | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [loadingTwinAvailability, setLoadingTwinAvailability] = useState(false);
+  const [loadingAyourAvailability, setLoadingAyourAvailability] = useState(false);
+  const [loadingAmlalAvailability, setLoadingAmlalAvailability] = useState(false);
   const fetchRequestRef = useRef<string | null>(null);
   const fetchTwinRequestRef = useRef<string | null>(null);
+  const fetchAyourRequestRef = useRef<string | null>(null);
+  const fetchAmlalRequestRef = useRef<string | null>(null);
 
   // Debug: Log component render and arrivalDate
   console.log('🚀 RoomStep component rendered. arrivalDate:', arrivalDate);
@@ -334,6 +348,210 @@ export default function RoomStep() {
     };
   }, [arrivalDate]);
 
+  // Fetch bed availability for Ayour room - Bigdi (id: "6")
+  useEffect(() => {
+    if (!arrivalDate) {
+      console.log('No arrivalDate, clearing Ayour room availability');
+      setAyourRoomAvailability(null);
+      setLoadingAyourAvailability(false);
+      fetchAyourRequestRef.current = null;
+      return;
+    }
+
+    const dateParam = arrivalDate.includes('T') 
+      ? arrivalDate.split('T')[0] 
+      : arrivalDate;
+    
+    const requestId = `${dateParam}-ayour-${Date.now()}`;
+    fetchAyourRequestRef.current = requestId;
+    
+    console.log('🔄 Fetching Ayour room availability for date:', dateParam, 'Request ID:', requestId);
+    
+    const abortController = new AbortController();
+    setLoadingAyourAvailability(true);
+    
+    const fetchAyourRoomAvailability = async () => {
+      try {
+        const timeoutId = setTimeout(() => abortController.abort(), 10000);
+        
+        const response = await fetch(
+          `/api/room-availability?roomId=6&arrivalDate=${dateParam}`,
+          { signal: abortController.signal }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        if (fetchAyourRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for Ayour room request:', requestId);
+          return;
+        }
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Failed to fetch Ayour room availability:', response.status, errorText);
+          if (fetchAyourRequestRef.current === requestId) {
+            setAyourRoomAvailability({
+              bookedBeds: 2,
+              availableBeds: 0,
+              isFullyBooked: true,
+            });
+            setLoadingAyourAvailability(false);
+          }
+          return;
+        }
+        
+        const data = await response.json();
+        console.log('📦 Ayour room availability data received for request:', requestId, data);
+        
+        if (fetchAyourRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for Ayour room request:', requestId);
+          return;
+        }
+        
+        const availability = {
+          bookedBeds: data.bookedBeds || 0,
+          availableBeds: data.availableBeds ?? 2,
+          isFullyBooked: data.isFullyBooked === true,
+        };
+        
+        console.log('✅ Setting Ayour room availability for request:', requestId, availability);
+        setAyourRoomAvailability(availability);
+        setLoadingAyourAvailability(false);
+        
+      } catch (error) {
+        if (fetchAyourRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale Ayour room request:', requestId);
+          return;
+        }
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('⚠️ Ayour room request aborted for:', requestId);
+          return;
+        } else {
+          console.error('❌ Error fetching Ayour room availability:', error);
+        }
+        
+        if (fetchAyourRequestRef.current === requestId) {
+          setAyourRoomAvailability({
+            bookedBeds: 2,
+            availableBeds: 0,
+            isFullyBooked: true,
+          });
+          setLoadingAyourAvailability(false);
+        }
+      }
+    };
+
+    fetchAyourRoomAvailability();
+    
+    return () => {
+      console.log('🧹 Cleaning up Ayour room request:', requestId);
+      abortController.abort();
+    };
+  }, [arrivalDate]);
+
+  // Fetch bed availability for Amlal room - Bigdi (id: "8")
+  useEffect(() => {
+    if (!arrivalDate) {
+      console.log('No arrivalDate, clearing Amlal room availability');
+      setAmlalRoomAvailability(null);
+      setLoadingAmlalAvailability(false);
+      fetchAmlalRequestRef.current = null;
+      return;
+    }
+
+    const dateParam = arrivalDate.includes('T') 
+      ? arrivalDate.split('T')[0] 
+      : arrivalDate;
+    
+    const requestId = `${dateParam}-amlal-${Date.now()}`;
+    fetchAmlalRequestRef.current = requestId;
+    
+    console.log('🔄 Fetching Amlal room availability for date:', dateParam, 'Request ID:', requestId);
+    
+    const abortController = new AbortController();
+    setLoadingAmlalAvailability(true);
+    
+    const fetchAmlalRoomAvailability = async () => {
+      try {
+        const timeoutId = setTimeout(() => abortController.abort(), 10000);
+        
+        const response = await fetch(
+          `/api/room-availability?roomId=8&arrivalDate=${dateParam}`,
+          { signal: abortController.signal }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for Amlal room request:', requestId);
+          return;
+        }
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Failed to fetch Amlal room availability:', response.status, errorText);
+          if (fetchAmlalRequestRef.current === requestId) {
+            setAmlalRoomAvailability({
+              bookedBeds: 2,
+              availableBeds: 0,
+              isFullyBooked: true,
+            });
+            setLoadingAmlalAvailability(false);
+          }
+          return;
+        }
+        
+        const data = await response.json();
+        console.log('📦 Amlal room availability data received for request:', requestId, data);
+        
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for Amlal room request:', requestId);
+          return;
+        }
+        
+        const availability = {
+          bookedBeds: data.bookedBeds || 0,
+          availableBeds: data.availableBeds ?? 2,
+          isFullyBooked: data.isFullyBooked === true,
+        };
+        
+        console.log('✅ Setting Amlal room availability for request:', requestId, availability);
+        setAmlalRoomAvailability(availability);
+        setLoadingAmlalAvailability(false);
+        
+      } catch (error) {
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale Amlal room request:', requestId);
+          return;
+        }
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('⚠️ Amlal room request aborted for:', requestId);
+          return;
+        } else {
+          console.error('❌ Error fetching Amlal room availability:', error);
+        }
+        
+        if (fetchAmlalRequestRef.current === requestId) {
+          setAmlalRoomAvailability({
+            bookedBeds: 2,
+            availableBeds: 0,
+            isFullyBooked: true,
+          });
+          setLoadingAmlalAvailability(false);
+        }
+      }
+    };
+
+    fetchAmlalRoomAvailability();
+    
+    return () => {
+      console.log('🧹 Cleaning up Amlal room request:', requestId);
+      abortController.abort();
+    };
+  }, [arrivalDate]);
+
   // Calculate total assigned people
   const totalAssigned = Object.values(roomAssignments).reduce((sum, n) => sum + n, 0);
 
@@ -374,13 +592,45 @@ export default function RoomStep() {
       } else if (delta === -1 && current > 0) {
         next[roomId] = current - 1;
       }
-    } else {
-      // Other rooms: max 2 people
-      if (delta === 1 && totalAssigned < maxPeople && current < 2) {
+    } else if (roomId === "6") {
+      // Ayour room - Bigdi: max based on available beds (2 beds)
+      const isFullyBooked = ayourRoomAvailability?.isFullyBooked || false;
+      const availableBeds = ayourRoomAvailability?.availableBeds ?? 2;
+      const maxForAyourRoom = Math.min(availableBeds, 2); // Max 2 beds, but limited by availability
+      
+      // Prevent changes if room is fully booked
+      if (isFullyBooked) {
+        return;
+      }
+      
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForAyourRoom) {
         next[roomId] = current + 1;
       } else if (delta === -1 && current > 0) {
         next[roomId] = current - 1;
       }
+    } else if (roomId === "8") {
+      // Amlal room - Bigdi: max based on available beds (2 beds)
+      const isFullyBooked = amlalRoomAvailability?.isFullyBooked || false;
+      const availableBeds = amlalRoomAvailability?.availableBeds ?? 2;
+      const maxForAmlalRoom = Math.min(availableBeds, 2); // Max 2 beds, but limited by availability
+      
+      // Prevent changes if room is fully booked
+      if (isFullyBooked) {
+        return;
+      }
+      
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForAmlalRoom) {
+        next[roomId] = current + 1;
+      } else if (delta === -1 && current > 0) {
+        next[roomId] = current - 1;
+      }
+    } else {
+      // Other rooms: max 2 people
+    if (delta === 1 && totalAssigned < maxPeople && current < 2) {
+      next[roomId] = current + 1;
+    } else if (delta === -1 && current > 0) {
+      next[roomId] = current - 1;
+    }
     }
     
     setRoomAssignments(next);
@@ -399,10 +649,18 @@ export default function RoomStep() {
         <div className="mb-4 p-2 bg-yellow-100 border border-yellow-400 rounded text-sm">
           <strong>Debug Info:</strong><br/>
           Arrival Date: {arrivalDate || 'NOT SET'} | <br/>
-          Triple Room Availability: {tripleRoomAvailability ? 
+          Triple Room (ID 2): {tripleRoomAvailability ? 
             `Booked: ${tripleRoomAvailability.bookedBeds}, Available: ${tripleRoomAvailability.availableBeds}, Fully Booked: ${tripleRoomAvailability.isFullyBooked}` 
-            : 'NULL (not loaded yet)'} | <br/>
-          Loading: {loadingAvailability ? 'YES' : 'NO'}
+            : 'NULL'} | Loading: {loadingAvailability ? 'YES' : 'NO'} | <br/>
+          Twin Room (ID 4): {twinRoomAvailability ? 
+            `Booked: ${twinRoomAvailability.bookedBeds}, Available: ${twinRoomAvailability.availableBeds}, Fully Booked: ${twinRoomAvailability.isFullyBooked}` 
+            : 'NULL'} | Loading: {loadingTwinAvailability ? 'YES' : 'NO'} | <br/>
+          Ayour Room (ID 6): {ayourRoomAvailability ? 
+            `Booked: ${ayourRoomAvailability.bookedBeds}, Available: ${ayourRoomAvailability.availableBeds}, Fully Booked: ${ayourRoomAvailability.isFullyBooked}` 
+            : 'NULL'} | Loading: {loadingAyourAvailability ? 'YES' : 'NO'} | <br/>
+          Amlal Room (ID 8): {amlalRoomAvailability ? 
+            `Booked: ${amlalRoomAvailability.bookedBeds}, Available: ${amlalRoomAvailability.availableBeds}, Fully Booked: ${amlalRoomAvailability.isFullyBooked}` 
+            : 'NULL'} | Loading: {loadingAmlalAvailability ? 'YES' : 'NO'}
         </div>
         <div className="w-full mb-8">
           <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px] font-normal" style={{ fontFamily: 'Nunito, sans-serif', width: '100%', fontWeight: 400 }}>
@@ -564,14 +822,87 @@ export default function RoomStep() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {bigdiRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
-              // Bigdi rooms are not Triple rooms, so they're never fully booked
-              const isFullyBooked = false;
+              const isAyourRoom = room.id === "6";
+              const isAmlalRoom = room.id === "8";
+              
+              // For Ayour room and Amlal room, use availability data; for others, default values
+              let isFullyBooked = false;
+              let availableBeds = 2;
+              let maxForRoom = 2;
+              let isLoading = false;
+              
+              if (isAyourRoom) {
+                // Only use availability data if it's loaded AND not currently loading
+                if (ayourRoomAvailability !== null && !loadingAyourAvailability) {
+                  isFullyBooked = ayourRoomAvailability.isFullyBooked === true;
+                  availableBeds = ayourRoomAvailability.availableBeds ?? 2;
+                  maxForRoom = Math.min(availableBeds, 2);
+                } else if (loadingAyourAvailability) {
+                  isFullyBooked = true;
+                  availableBeds = 0;
+                  maxForRoom = 0;
+                  isLoading = true;
+                } else {
+                  isFullyBooked = false;
+                  availableBeds = 2;
+                  maxForRoom = 2;
+                }
+              } else if (isAmlalRoom) {
+                // Only use availability data if it's loaded AND not currently loading
+                if (amlalRoomAvailability !== null && !loadingAmlalAvailability) {
+                  isFullyBooked = amlalRoomAvailability.isFullyBooked === true;
+                  availableBeds = amlalRoomAvailability.availableBeds ?? 2;
+                  maxForRoom = Math.min(availableBeds, 2);
+                } else if (loadingAmlalAvailability) {
+                  isFullyBooked = true;
+                  availableBeds = 0;
+                  maxForRoom = 0;
+                  isLoading = true;
+                } else {
+                  isFullyBooked = false;
+                  availableBeds = 2;
+                  maxForRoom = 2;
+                }
+              }
+              
+              // Debug log for Ayour room and Amlal room
+              if (isAyourRoom) {
+                console.log('Ayour room rendering:', {
+                  availability: ayourRoomAvailability,
+                  loading: loadingAyourAvailability,
+                  isFullyBooked,
+                  availableBeds,
+                  maxForRoom,
+                });
+              } else if (isAmlalRoom) {
+                console.log('Amlal room rendering:', {
+                  availability: amlalRoomAvailability,
+                  loading: loadingAmlalAvailability,
+                  isFullyBooked,
+                  availableBeds,
+                  maxForRoom,
+                });
+              }
+              
               return (
-                <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative`}>
-                  <div className="absolute top-0 left-0 w-full bg-lapoint-red text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl">
-                    Room is not bookable for 1 person
+                <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative ${(isAyourRoom && loadingAyourAvailability) || (isAmlalRoom && loadingAmlalAvailability) ? 'opacity-90' : ''}`}>
+                  {/* Banner - grey when unavailable, red when available */}
+                  <div className={`absolute top-0 left-0 w-full ${isFullyBooked ? 'bg-gray-500' : 'bg-lapoint-red'} text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl`}>
+                    {(isAyourRoom && loadingAyourAvailability) || (isAmlalRoom && loadingAmlalAvailability)
+                      ? 'Checking availability...' 
+                      : isFullyBooked 
+                        ? 'Room not available' 
+                        : 'Room is not bookable for 1 person'}
                   </div>
-                  <Image src={room.img} alt={room.name} width={600} height={400} quality={100} className="w-full h-56 object-cover" />
+                  {/* Image with low opacity when unavailable or loading */}
+                  <Image 
+                    src={room.img} 
+                    alt={room.name} 
+                    width={600} 
+                    height={400} 
+                    quality={100} 
+                    className={`w-full h-56 object-cover ${isFullyBooked || isLoading ? 'opacity-50' : ''}`} 
+                  />
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="font-semibold text-base mb-2">{room.name}</div>
@@ -582,11 +913,12 @@ export default function RoomStep() {
                             : 'text-lapoint-red'
                         }`}>+ EUR {room.price}</div>
                         <div className="text-sm text-gray-600">Number of people</div>
-                    </div>
+                      </div>
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
-                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={isFullyBooked || isLoading}
                         >
                           View room
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -596,20 +928,20 @@ export default function RoomStep() {
                         <div className="flex items-center gap-2">
                       <button
                         type="button"
-                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
                         aria-label="Decrease number of people"
                         onClick={() => handleChange(room.id, -1)}
-                        disabled={assigned === 0}
+                            disabled={assigned === 0 || isFullyBooked || isLoading}
                       >
                         –
                       </button>
                       <span className="w-8 text-center font-bold">{assigned}</span>
                       <button
                         type="button"
-                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
                         aria-label="Increase number of people"
                         onClick={() => handleChange(room.id, 1)}
-                        disabled={assigned >= 2 || totalAssigned >= maxPeople}
+                            disabled={assigned >= maxForRoom || totalAssigned >= maxPeople || isFullyBooked || isLoading}
                       >
                         +
                       </button>
