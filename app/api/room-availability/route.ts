@@ -243,10 +243,11 @@ export async function GET(req: NextRequest) {
     // Room ID "4" = Twin room - Oubaha (2 beds)
     // Room ID "6" = Ayour room - Bigdi (2 beds)
     // Room ID "7" = Tafokt room - Bigdi (1 bed)
-    // Room ID "9" = Tamazirt room - Bigdi (1 bed)
+    // Room ID "9" = Akal room - Bigdi (1 bed)
+    // Room ID "10" = Amlal room - Bigdi (1 bed)
     const totalBeds = roomId === "2" ? 3 :
                       (roomId === "4" || roomId === "6") ? 2 :
-                      (roomId === "1" || roomId === "3" || roomId === "7" || roomId === "9") ? 1 : 2; // Default to 2 for unknown rooms
+                      (roomId === "1" || roomId === "3" || roomId === "7" || roomId === "9" || roomId === "10") ? 1 : 2; // Default to 2 for unknown rooms
     const availableBeds = Math.max(0, totalBeds - bookedBeds);
     const isFullyBooked = bookedBeds >= totalBeds;
 

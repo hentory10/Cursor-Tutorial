@@ -60,7 +60,7 @@ const bigdiRooms = [
   },
   {
     id: "9",
-    name: "Tamazirt room - Bigdi",
+    name: "Akal room - Bigdi",
     price: 140,
     img: "/images/room1.jpg",
     available: true,
@@ -68,7 +68,7 @@ const bigdiRooms = [
   },
   {
     id: "10",
-    name: "Igna room",
+    name: "Amlal room - Bigdi",
     price: 140,
     img: "/images/room1.jpg",
     available: true,
@@ -150,12 +150,12 @@ export default function RoomStep() {
     availableBeds: number;
     isFullyBooked: boolean;
   } | null>(null);
-  const [tamazirtBigdiRoomAvailability, setTamazirtBigdiRoomAvailability] = useState<{
+  const [akalRoomAvailability, setAkalRoomAvailability] = useState<{
     bookedBeds: number;
     availableBeds: number;
     isFullyBooked: boolean;
   } | null>(null);
-  const [ignaRoomAvailability, setIgnaRoomAvailability] = useState<{
+  const [amlalRoomAvailability, setAmlalRoomAvailability] = useState<{
     bookedBeds: number;
     availableBeds: number;
     isFullyBooked: boolean;
@@ -166,16 +166,16 @@ export default function RoomStep() {
   const [loadingDoubleAvailability, setLoadingDoubleAvailability] = useState(false);
   const [loadingTafoktAvailability, setLoadingTafoktAvailability] = useState(false);
   const [loadingAyourAvailability, setLoadingAyourAvailability] = useState(false);
-  const [loadingTamazirtBigdiAvailability, setLoadingTamazirtBigdiAvailability] = useState(false);
-  const [loadingIgnaAvailability, setLoadingIgnaAvailability] = useState(false);
+  const [loadingAkalAvailability, setLoadingAkalAvailability] = useState(false);
+  const [loadingAmlalAvailability, setLoadingAmlalAvailability] = useState(false);
   const fetchRequestRef = useRef<string | null>(null);
   const fetchTwinRequestRef = useRef<string | null>(null);
   const fetchTamazirtRequestRef = useRef<string | null>(null);
   const fetchDoubleRequestRef = useRef<string | null>(null);
   const fetchTafoktRequestRef = useRef<string | null>(null);
   const fetchAyourRequestRef = useRef<string | null>(null);
-  const fetchTamazirtBigdiRequestRef = useRef<string | null>(null);
-  const fetchIgnaRequestRef = useRef<string | null>(null);
+  const fetchAkalRequestRef = useRef<string | null>(null);
+  const fetchAmlalRequestRef = useRef<string | null>(null);
 
   // Debug: Log component render and arrivalDate
   console.log('🚀 RoomStep component rendered. arrivalDate:', arrivalDate);
@@ -731,13 +731,13 @@ export default function RoomStep() {
     };
   }, [arrivalDate]);
 
-  // Fetch bed availability for Tamazirt room - Bigdi (id: "9") - 1 bed
+  // Fetch bed availability for Akal room (id: "9") - 1 bed
   useEffect(() => {
     if (!arrivalDate) {
-      console.log('No arrivalDate, clearing Tamazirt Bigdi room availability');
-      setTamazirtBigdiRoomAvailability(null);
-      setLoadingTamazirtBigdiAvailability(false);
-      fetchTamazirtBigdiRequestRef.current = null;
+      console.log('No arrivalDate, clearing Akal room availability');
+      setAkalRoomAvailability(null);
+      setLoadingAkalAvailability(false);
+      fetchAkalRequestRef.current = null;
       return;
     }
 
@@ -745,15 +745,15 @@ export default function RoomStep() {
       ? arrivalDate.split('T')[0] 
       : arrivalDate;
     
-    const requestId = `${dateParam}-tamazirt-bigdi-${Date.now()}`;
-    fetchTamazirtBigdiRequestRef.current = requestId;
+    const requestId = `${dateParam}-akal-${Date.now()}`;
+    fetchAkalRequestRef.current = requestId;
     
-    console.log('🔄 Fetching Tamazirt Bigdi room availability for date:', dateParam, 'Request ID:', requestId);
+    console.log('🔄 Fetching Akal room availability for date:', dateParam, 'Request ID:', requestId);
     
     const abortController = new AbortController();
-    setLoadingTamazirtBigdiAvailability(true);
+    setLoadingAkalAvailability(true);
     
-    const fetchTamazirtBigdiRoomAvailability = async () => {
+    const fetchAkalRoomAvailability = async () => {
       try {
         const timeoutId = setTimeout(() => abortController.abort(), 10000);
         
@@ -764,30 +764,30 @@ export default function RoomStep() {
         
         clearTimeout(timeoutId);
         
-        if (fetchTamazirtBigdiRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring stale response for Tamazirt Bigdi room request:', requestId);
+        if (fetchAkalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for Akal room request:', requestId);
           return;
         }
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ Failed to fetch Tamazirt Bigdi room availability:', response.status, errorText);
-          if (fetchTamazirtBigdiRequestRef.current === requestId) {
-            setTamazirtBigdiRoomAvailability({
+          console.error('❌ Failed to fetch Akal room availability:', response.status, errorText);
+          if (fetchAkalRequestRef.current === requestId) {
+            setAkalRoomAvailability({
               bookedBeds: 1,
               availableBeds: 0,
               isFullyBooked: true,
             });
-            setLoadingTamazirtBigdiAvailability(false);
+            setLoadingAkalAvailability(false);
           }
           return;
         }
         
         const data = await response.json();
-        console.log('📦 Tamazirt Bigdi room availability data received for request:', requestId, data);
+        console.log('📦 Akal room availability data received for request:', requestId, data);
         
-        if (fetchTamazirtBigdiRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring stale response data for Tamazirt Bigdi room request:', requestId);
+        if (fetchAkalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for Akal room request:', requestId);
           return;
         }
         
@@ -797,30 +797,30 @@ export default function RoomStep() {
           isFullyBooked: data.isFullyBooked === true,
         };
         
-        console.log('✅ Setting Tamazirt Bigdi room availability for request:', requestId, availability);
-        setTamazirtBigdiRoomAvailability(availability);
-        setLoadingTamazirtBigdiAvailability(false);
+        console.log('✅ Setting Akal room availability for request:', requestId, availability);
+        setAkalRoomAvailability(availability);
+        setLoadingAkalAvailability(false);
         
       } catch (error) {
-        if (fetchTamazirtBigdiRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring error for stale Tamazirt Bigdi room request:', requestId);
+        if (fetchAkalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale Akal room request:', requestId);
           return;
         }
         
         if (error instanceof Error && error.name === 'AbortError') {
-          console.log('⚠️ Tamazirt Bigdi room request aborted for:', requestId);
+          console.log('⚠️ Akal room request aborted for:', requestId);
           return;
         } else {
-          console.error('❌ Error fetching Tamazirt Bigdi room availability:', error);
+          console.error('❌ Error fetching Akal room availability:', error);
         }
         
-        if (fetchTamazirtBigdiRequestRef.current === requestId) {
-          setTamazirtBigdiRoomAvailability({
+        if (fetchAkalRequestRef.current === requestId) {
+          setAkalRoomAvailability({
             bookedBeds: 1,
             availableBeds: 0,
             isFullyBooked: true,
           });
-          setLoadingTamazirtBigdiAvailability(false);
+          setLoadingAkalAvailability(false);
         }
       }
     };
@@ -829,7 +829,7 @@ export default function RoomStep() {
     const requestCompletedRef = { current: false };
     
     // Call immediately and ensure promise rejection is always handled
-    const promise = fetchTamazirtBigdiRoomAvailability()
+    const promise = fetchAkalRoomAvailability()
       .then(() => {
         requestCompletedRef.current = true;
       })
@@ -841,7 +841,7 @@ export default function RoomStep() {
     
     return () => {
       // Only cleanup if this is still the current request
-      if (fetchTamazirtBigdiRequestRef.current !== requestId) {
+      if (fetchAkalRequestRef.current !== requestId) {
         return;
       }
       
@@ -859,13 +859,13 @@ export default function RoomStep() {
     };
   }, [arrivalDate]);
 
-  // Fetch bed availability for Igna room (id: "10") - 1 bed
+  // Fetch bed availability for Amlal room (id: "10") - 1 bed
   useEffect(() => {
     if (!arrivalDate) {
-      console.log('No arrivalDate, clearing Igna room availability');
-      setIgnaRoomAvailability(null);
-      setLoadingIgnaAvailability(false);
-      fetchIgnaRequestRef.current = null;
+      console.log('No arrivalDate, clearing Amlal room availability');
+      setAmlalRoomAvailability(null);
+      setLoadingAmlalAvailability(false);
+      fetchAmlalRequestRef.current = null;
       return;
     }
 
@@ -873,15 +873,15 @@ export default function RoomStep() {
       ? arrivalDate.split('T')[0] 
       : arrivalDate;
     
-    const requestId = `${dateParam}-igna-${Date.now()}`;
-    fetchIgnaRequestRef.current = requestId;
+    const requestId = `${dateParam}-amlal-${Date.now()}`;
+    fetchAmlalRequestRef.current = requestId;
     
-    console.log('🔄 Fetching Igna room availability for date:', dateParam, 'Request ID:', requestId);
+    console.log('🔄 Fetching Amlal room availability for date:', dateParam, 'Request ID:', requestId);
     
     const abortController = new AbortController();
-    setLoadingIgnaAvailability(true);
+    setLoadingAmlalAvailability(true);
     
-    const fetchIgnaRoomAvailability = async () => {
+    const fetchAmlalRoomAvailability = async () => {
       try {
         const timeoutId = setTimeout(() => abortController.abort(), 10000);
         
@@ -892,30 +892,30 @@ export default function RoomStep() {
         
         clearTimeout(timeoutId);
         
-        if (fetchIgnaRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring stale response for Igna room request:', requestId);
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for Amlal room request:', requestId);
           return;
         }
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ Failed to fetch Igna room availability:', response.status, errorText);
-          if (fetchIgnaRequestRef.current === requestId) {
-            setIgnaRoomAvailability({
+          console.error('❌ Failed to fetch Amlal room availability:', response.status, errorText);
+          if (fetchAmlalRequestRef.current === requestId) {
+            setAmlalRoomAvailability({
               bookedBeds: 1,
               availableBeds: 0,
               isFullyBooked: true,
             });
-            setLoadingIgnaAvailability(false);
+            setLoadingAmlalAvailability(false);
           }
           return;
         }
         
         const data = await response.json();
-        console.log('📦 Igna room availability data received for request:', requestId, data);
+        console.log('📦 Amlal room availability data received for request:', requestId, data);
         
-        if (fetchIgnaRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring stale response data for Igna room request:', requestId);
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for Amlal room request:', requestId);
           return;
         }
         
@@ -925,30 +925,30 @@ export default function RoomStep() {
           isFullyBooked: data.isFullyBooked === true,
         };
         
-        console.log('✅ Setting Igna room availability for request:', requestId, availability);
-        setIgnaRoomAvailability(availability);
-        setLoadingIgnaAvailability(false);
+        console.log('✅ Setting Amlal room availability for request:', requestId, availability);
+        setAmlalRoomAvailability(availability);
+        setLoadingAmlalAvailability(false);
         
       } catch (error) {
-        if (fetchIgnaRequestRef.current !== requestId) {
-          console.log('⚠️ Ignoring error for stale Igna room request:', requestId);
+        if (fetchAmlalRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale Amlal room request:', requestId);
           return;
         }
         
         if (error instanceof Error && error.name === 'AbortError') {
-          console.log('⚠️ Igna room request aborted for:', requestId);
+          console.log('⚠️ Amlal room request aborted for:', requestId);
           return;
         } else {
-          console.error('❌ Error fetching Igna room availability:', error);
+          console.error('❌ Error fetching Amlal room availability:', error);
         }
         
-        if (fetchIgnaRequestRef.current === requestId) {
-          setIgnaRoomAvailability({
+        if (fetchAmlalRequestRef.current === requestId) {
+          setAmlalRoomAvailability({
             bookedBeds: 1,
             availableBeds: 0,
             isFullyBooked: true,
           });
-          setLoadingIgnaAvailability(false);
+          setLoadingAmlalAvailability(false);
         }
       }
     };
@@ -957,7 +957,7 @@ export default function RoomStep() {
     const requestCompletedRef = { current: false };
     
     // Call immediately and ensure promise rejection is always handled
-    const promise = fetchIgnaRoomAvailability()
+    const promise = fetchAmlalRoomAvailability()
       .then(() => {
         requestCompletedRef.current = true;
       })
@@ -969,7 +969,7 @@ export default function RoomStep() {
     
     return () => {
       // Only cleanup if this is still the current request
-      if (fetchIgnaRequestRef.current !== requestId) {
+      if (fetchAmlalRequestRef.current !== requestId) {
         return;
       }
       
@@ -1337,33 +1337,33 @@ export default function RoomStep() {
         next[roomId] = current - 1;
       }
     } else if (roomId === "9") {
-      // Tamazirt room - Bigdi: max based on available beds (1 bed, can fit 1-2 people)
-      const isFullyBooked = tamazirtBigdiRoomAvailability?.isFullyBooked || false;
-      const availableBeds = tamazirtBigdiRoomAvailability?.availableBeds ?? 1;
-      const maxForTamazirtBigdiRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
+      // Akal room: max based on available beds (1 bed, can fit 1-2 people)
+      const isFullyBooked = akalRoomAvailability?.isFullyBooked || false;
+      const availableBeds = akalRoomAvailability?.availableBeds ?? 1;
+      const maxForAkalRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
       
       // Prevent changes if room is fully booked
       if (isFullyBooked) {
         return;
       }
       
-      if (delta === 1 && totalAssigned < maxPeople && current < maxForTamazirtBigdiRoom) {
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForAkalRoom) {
         next[roomId] = current + 1;
       } else if (delta === -1 && current > 0) {
         next[roomId] = current - 1;
       }
     } else if (roomId === "10") {
-      // Igna room: max based on available beds (1 bed, can fit 1-2 people)
-      const isFullyBooked = ignaRoomAvailability?.isFullyBooked || false;
-      const availableBeds = ignaRoomAvailability?.availableBeds ?? 1;
-      const maxForIgnaRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
+      // Amlal room: max based on available beds (1 bed, can fit 1-2 people)
+      const isFullyBooked = amlalRoomAvailability?.isFullyBooked || false;
+      const availableBeds = amlalRoomAvailability?.availableBeds ?? 1;
+      const maxForAmlalRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
       
       // Prevent changes if room is fully booked
       if (isFullyBooked) {
         return;
       }
       
-      if (delta === 1 && totalAssigned < maxPeople && current < maxForIgnaRoom) {
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForAmlalRoom) {
         next[roomId] = current + 1;
       } else if (delta === -1 && current > 0) {
         next[roomId] = current - 1;
@@ -1411,12 +1411,12 @@ export default function RoomStep() {
           Tafokt Room (ID 7): {tafoktRoomAvailability ? 
             `Booked: ${tafoktRoomAvailability.bookedBeds}, Available: ${tafoktRoomAvailability.availableBeds}, Fully Booked: ${tafoktRoomAvailability.isFullyBooked}` 
             : 'NULL'} | Loading: {loadingTafoktAvailability ? 'YES' : 'NO'} | <br/>
-          Tamazirt Bigdi Room (ID 9): {tamazirtBigdiRoomAvailability ? 
-            `Booked: ${tamazirtBigdiRoomAvailability.bookedBeds}, Available: ${tamazirtBigdiRoomAvailability.availableBeds}, Fully Booked: ${tamazirtBigdiRoomAvailability.isFullyBooked}` 
-            : 'NULL'} | Loading: {loadingTamazirtBigdiAvailability ? 'YES' : 'NO'} | <br/>
-          Igna Room (ID 10): {ignaRoomAvailability ? 
-            `Booked: ${ignaRoomAvailability.bookedBeds}, Available: ${ignaRoomAvailability.availableBeds}, Fully Booked: ${ignaRoomAvailability.isFullyBooked}` 
-            : 'NULL'} | Loading: {loadingIgnaAvailability ? 'YES' : 'NO'}
+          Akal Room (ID 9): {akalRoomAvailability ? 
+            `Booked: ${akalRoomAvailability.bookedBeds}, Available: ${akalRoomAvailability.availableBeds}, Fully Booked: ${akalRoomAvailability.isFullyBooked}` 
+            : 'NULL'} | Loading: {loadingAkalAvailability ? 'YES' : 'NO'} | <br/>
+          Amlal Room (ID 10): {amlalRoomAvailability ? 
+            `Booked: ${amlalRoomAvailability.bookedBeds}, Available: ${amlalRoomAvailability.availableBeds}, Fully Booked: ${amlalRoomAvailability.isFullyBooked}` 
+            : 'NULL'} | Loading: {loadingAmlalAvailability ? 'YES' : 'NO'}
         </div>
         <div className="w-full mb-8">
           <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px] font-normal" style={{ width: '100%', fontWeight: 400 }}>
@@ -1636,8 +1636,8 @@ export default function RoomStep() {
               const assigned = roomAssignments[room.id] || 0;
               const isAyourRoom = room.id === "6";
               const isTafoktRoom = room.id === "7";
-              const isTamazirtBigdiRoom = room.id === "9";
-              const isIgnaRoom = room.id === "10";
+              const isAkalRoom = room.id === "9";
+              const isAmlalRoom = room.id === "10";
               
               // For rooms with bed-based availability, use availability data; for others, default values
               let isFullyBooked = false;
@@ -1677,13 +1677,29 @@ export default function RoomStep() {
                   availableBeds = 1;
                   maxForRoom = 2;
                 }
-              } else if (isTamazirtBigdiRoom) {
-                // Tamazirt Bigdi room: 1 bed (can fit 1-2 people)
-                if (tamazirtBigdiRoomAvailability !== null && !loadingTamazirtBigdiAvailability) {
-                  isFullyBooked = tamazirtBigdiRoomAvailability.isFullyBooked === true;
-                  availableBeds = tamazirtBigdiRoomAvailability.availableBeds ?? 1;
+              } else if (isAkalRoom) {
+                // Akal room: 1 bed (can fit 1-2 people)
+                if (akalRoomAvailability !== null && !loadingAkalAvailability) {
+                  isFullyBooked = akalRoomAvailability.isFullyBooked === true;
+                  availableBeds = akalRoomAvailability.availableBeds ?? 1;
                   maxForRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
-                } else if (loadingTamazirtBigdiAvailability) {
+                } else if (loadingAkalAvailability) {
+                  isFullyBooked = true;
+                  availableBeds = 0;
+                  maxForRoom = 0;
+                  isLoading = true;
+                } else {
+                  isFullyBooked = false;
+                  availableBeds = 1;
+                  maxForRoom = 2;
+                }
+              } else if (isAmlalRoom) {
+                // Amlal room: 1 bed (can fit 1-2 people) - same logic as Tamazirt room
+                if (amlalRoomAvailability !== null && !loadingAmlalAvailability) {
+                  isFullyBooked = amlalRoomAvailability.isFullyBooked === true;
+                  availableBeds = amlalRoomAvailability.availableBeds ?? 1;
+                  maxForRoom = availableBeds > 0 ? 2 : 0; // Max 2 people if bed is available
+                } else if (loadingAmlalAvailability) {
                   isFullyBooked = true;
                   availableBeds = 0;
                   maxForRoom = 0;
@@ -1712,10 +1728,18 @@ export default function RoomStep() {
                   availableBeds,
                   maxForRoom,
                 });
-              } else if (isTamazirtBigdiRoom) {
-                console.log('Tamazirt Bigdi room rendering:', {
-                  availability: tamazirtBigdiRoomAvailability,
-                  loading: loadingTamazirtBigdiAvailability,
+              } else if (isAkalRoom) {
+                console.log('Akal room rendering:', {
+                  availability: akalRoomAvailability,
+                  loading: loadingAkalAvailability,
+                  isFullyBooked,
+                  availableBeds,
+                  maxForRoom,
+                });
+              } else if (isAmlalRoom) {
+                console.log('Amlal room rendering:', {
+                  availability: amlalRoomAvailability,
+                  loading: loadingAmlalAvailability,
                   isFullyBooked,
                   availableBeds,
                   maxForRoom,
@@ -1723,10 +1747,11 @@ export default function RoomStep() {
               }
               
               // All Bigdi rooms with bed-based availability check
-              const isRoomWithAvailability = isAyourRoom || isTafoktRoom || isTamazirtBigdiRoom;
+              const isRoomWithAvailability = isAyourRoom || isTafoktRoom || isAkalRoom || isAmlalRoom;
               const isRoomLoading = (isAyourRoom && loadingAyourAvailability) || 
                                    (isTafoktRoom && loadingTafoktAvailability) || 
-                                   (isTamazirtBigdiRoom && loadingTamazirtBigdiAvailability);
+                                   (isAkalRoom && loadingAkalAvailability) ||
+                                   (isAmlalRoom && loadingAmlalAvailability);
               
               const shouldShowAsAvailable = !isFullyBooked && !isRoomLoading;
               
