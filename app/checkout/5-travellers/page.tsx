@@ -451,7 +451,6 @@ export default function TravellersStep() {
           <div className={`transition-all ${showDiscount ? 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]' : 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]'}`}>
             <button
               className="w-full flex items-center justify-between px-6 py-4 font-semibold text-lg focus:outline-none rounded-2xl"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
               onClick={() => setShowDiscount(v => !v)}
             >
               Add discount code
@@ -477,7 +476,6 @@ export default function TravellersStep() {
           <div className={`transition-all ${showGiftcard ? 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]' : 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]'}`}>
             <button
               className="w-full flex items-center justify-between px-6 py-4 font-semibold text-lg focus:outline-none rounded-2xl"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
               onClick={() => setShowGiftcard(v => !v)}
             >
               Add giftcard

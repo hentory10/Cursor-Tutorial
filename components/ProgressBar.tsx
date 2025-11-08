@@ -19,12 +19,12 @@ export default function ProgressBar() {
   return (
     <div className="w-full bg-lapoint-yellow pb-0">
       <div className="relative max-w-7xl mx-auto pt-8 pb-2 px-4">
-        <div className="flex justify-between items-end" style={{ fontFamily: 'Nunito, sans-serif', fontSize: 14 }}>
+        <div className="flex justify-between items-end" style={{ fontSize: 14 }}>
           {steps.map((step, i) => (
             <div key={step.path} className="flex-1 text-center">
               <span
                 className={`font-semibold ${i <= currentStep ? 'text-lapoint-red' : 'text-gray-400'} ${i === currentStep ? 'font-bold' : ''}`}
-                style={{ fontFamily: 'Nunito, sans-serif', fontSize: 14 }}
+                style={{ fontSize: 14 }}
               >
                 {step.label}
               </span>

@@ -72,7 +72,7 @@ export default function PackageStep() {
             </div>
           </div>
           <div className="w-full mb-4">
-            <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ fontFamily: 'Nunito, sans-serif', display: 'inline-block', width: '100%', fontWeight: 400 }}>
+            <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
               <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
             </div>
           </div>

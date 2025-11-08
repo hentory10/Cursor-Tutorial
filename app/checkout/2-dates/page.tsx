@@ -128,7 +128,7 @@ export default function DateStep() {
               </div>
               {/* Discount banner */}
               <div className="w-full mb-4">
-                <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ fontFamily: 'Nunito, sans-serif', display: 'inline-block', width: '100%', fontWeight: 400 }}>
+                <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
                   <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function DateStep() {
                   <div className="flex-1 flex justify-between items-center gap-8">
                     {[leftMonth, rightMonth].map((month, idx) => (
                       <div key={idx} className="flex-1 flex flex-col items-center">
-                        <div className="text-center font-bold mb-2 text-xl" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                        <div className="text-center font-bold mb-2 text-xl">
                           {month.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: TIMEZONE })}
                         </div>
                       </div>
@@ -167,7 +167,7 @@ export default function DateStep() {
                 <div className="flex gap-8 w-full">
                   {[{ matrix: leftMatrix, month: leftMonth }, { matrix: rightMatrix, month: rightMonth }].map(({ matrix, month }, idx) => (
                     <div key={idx} className="bg-white rounded-lg p-4 border flex-1">
-                      <div className="grid grid-cols-7 text-center text-gray-400 mb-1 text-lg font-semibold" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      <div className="grid grid-cols-7 text-center text-gray-400 mb-1 text-lg font-semibold">
                         {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d, i) => <div key={i}>{d}</div>)}
                       </div>
                       {matrix.map((week, wi) => (

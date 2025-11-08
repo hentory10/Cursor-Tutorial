@@ -144,17 +144,50 @@ export default function PaymentStep() {
     }
   };
 
+  // Get PayPal Client ID from environment variable
+  // For production: Get your Live Client ID from https://developer.paypal.com/
+  // For testing: Use sandbox Client ID (default: "sb")
+  // Live Client IDs are longer and start with "A" (usually 30+ characters)
+  // Sandbox Client IDs are shorter (usually 20-25 characters) or "sb"
+  const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "sb";
+  
+  // Detect if we're in sandbox mode
+  // Sandbox: "sb" or Client ID shorter than 30 characters
+  // Production: Client ID is 30+ characters (Live Client ID from PayPal)
+  const isSandbox = paypalClientId === "sb" || (paypalClientId.startsWith("A") && paypalClientId.length < 30);
+
   return (
-    <PayPalScriptProvider options={{ clientId: "sb", currency: "EUR" }}>
+    <PayPalScriptProvider 
+      options={{ 
+        clientId: paypalClientId, 
+        currency: "EUR",
+        intent: "capture",
+      }}
+    >
       <div className="min-h-screen bg-[#FFF9E8]">
         <div className="max-w-2xl mx-auto px-4 pt-8 pb-16">
-          {/* Test Mode Banner */}
-          <div className="bg-yellow-200 border border-yellow-400 rounded-lg p-3 mb-6 text-center">
-            <p className="font-bold text-yellow-900">🧪 TEST MODE - PayPal Sandbox</p>
-            <p className="text-sm text-yellow-800 mt-1">
-              Use PayPal test accounts to test payments. No real money will be charged.
-            </p>
-          </div>
+          {/* Test Mode Banner - Only show in sandbox mode */}
+          {isSandbox && (
+            <div className="bg-yellow-200 border border-yellow-400 rounded-lg p-3 mb-6 text-center">
+              <p className="font-bold text-yellow-900">🧪 TEST MODE - PayPal Sandbox</p>
+              <p className="text-sm text-yellow-800 mt-1">
+                Use PayPal test accounts to test payments. No real money will be charged.
+                <br />
+                <span className="font-semibold">Payments will appear in YOUR Sandbox PayPal account for testing.</span>
+              </p>
+            </div>
+          )}
+          
+          {/* Production Mode Indicator */}
+          {!isSandbox && (
+            <div className="bg-green-100 border border-green-400 rounded-lg p-3 mb-6 text-center">
+              <p className="font-bold text-green-900">✅ LIVE MODE - Payments Go to YOUR PayPal Account</p>
+              <p className="text-sm text-green-800 mt-1">
+                All payments will be automatically sent to the PayPal account linked to your Client ID. 
+                You'll receive email notifications and see payments in your PayPal account dashboard.
+              </p>
+            </div>
+          )}
 
           {/* Removed ProgressBar and camp name to avoid duplication */}
           <div className="bg-white rounded-2xl border border-gray-300 p-6 mb-8 max-w-md mx-auto">
@@ -204,8 +237,22 @@ export default function PaymentStep() {
                     style={{ layout: "vertical", color: "blue", shape: "rect", label: "paypal" }}
                     forceReRender={[total]}
                     createOrder={(_data: Record<string, unknown>, actions: any) => {
+                      // Create PayPal order
+                      // The money will automatically go to the PayPal account that owns the Client ID
+                      // When you use your Live Client ID, payments go to YOUR PayPal account
                       return actions.order.create({
-                        purchase_units: [{ amount: { value: total.toString() } }],
+                        purchase_units: [{
+                          amount: { 
+                            value: total.toString(),
+                            currency_code: "EUR"
+                          },
+                          description: `Booking payment for ${selectedPackage?.name || 'Package'}`,
+                        }],
+                        application_context: {
+                          brand_name: "Surf Camp Booking",
+                          landing_page: "BILLING",
+                          user_action: "PAY_NOW",
+                        }
                       });
                     }}
                     onApprove={async (_data: Record<string, unknown>, actions: any) => {
