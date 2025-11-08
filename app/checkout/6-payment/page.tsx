@@ -88,13 +88,6 @@ export default function PaymentStep() {
         arrivalDate: arrivalDate || new Date().toISOString(),
         checkoutDate: checkout.toISOString(),
         people: people || 1,
-        guestFullName: primaryGuest ? `${primaryGuest.firstName || ''} ${primaryGuest.lastName || ''}`.trim() : null,
-        guestAge: guestAge,
-        guestCountry: primaryGuest?.country || null,
-        guestPhone: primaryGuest?.phone || primaryGuest?.mobile || null,
-        guestEmail: primaryGuest?.email || null,
-        surfLevel: primaryGuest?.surfLevel || null,
-        gender: primaryGuest?.gender || null,
         travellers: (travellers || []).map((t: any) => ({
           name: t.name || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'Guest',
           firstName: t.firstName,

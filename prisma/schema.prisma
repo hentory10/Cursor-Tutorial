@@ -64,30 +64,52 @@ model Traveller {
 }
 
 model Booking {
-  id             String         @id @default(uuid())
-  package        Package        @relation(fields: [packageId], references: [id])
-  packageId      String
-  packageName    String?
-  room           Room           @relation(fields: [roomId], references: [id])
-  roomId         String
-  roomName       String?
-  arrivalDate    DateTime
-  checkoutDate   DateTime?
-  people         Int
-  guestFullName  String?
-  guestAge       Int?
-  guestCountry   String?
-  guestPhone     String?
-  guestEmail     String?
-  surfLevel      String?
-  gender         String?
-  travellers     Traveller[]
-  bookingAddOns  BookingAddOn[]
-  insurance      Boolean
-  airportTransfer Boolean       @default(false)
-  paymentType    String
-  total          Int
-  createdAt      DateTime       @default(now())
+  id                    String         @id @default(uuid())
+  package               Package        @relation(fields: [packageId], references: [id])
+  packageId             String
+  packageName           String?
+  room                  Room           @relation(fields: [roomId], references: [id])
+  roomId                String
+  roomName              String?
+  arrivalDate           DateTime
+  checkoutDate          DateTime?
+  duration              Int?
+  durationLabel         String?
+  people                Int
+  travellerCount        Int?
+  // All Travellers Information (comma-separated)
+  allTravellerNames     String?
+  allTravellerFirstNames String?
+  allTravellerLastNames String?
+  allTravellerEmails    String?
+  allTravellerPhones    String?
+  allTravellerCountries String?
+  allTravellerAges      String?
+  allTravellerBirthDates String?
+  allTravellerSurfLevels String?
+  allTravellerGenders   String?
+  // Add-Ons Information
+  addOnNames            String?
+  addOnIds              String?
+  addOnCount            Int?
+  // Pricing Information
+  packagePrice          Int?
+  roomPrice             Int?
+  subtotal              Int?
+  addOnsTotal           Int?
+  insuranceAmount       Int?
+  total                 Int
+  currency              String?        @default("EUR")
+  // Booking Options
+  insurance             Boolean
+  airportTransfer       Boolean        @default(false)
+  paymentType           String
+  // Status & Metadata
+  bookingStatus         String?        @default("confirmed")
+  notes                 String?
+  travellers            Traveller[]
+  bookingAddOns         BookingAddOn[]
+  createdAt             DateTime       @default(now())
 }
 
 model BookingAddOn {

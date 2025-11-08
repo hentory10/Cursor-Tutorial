@@ -70,13 +70,6 @@ export async function POST(req: NextRequest) {
       arrivalDate,
       checkoutDate,
       people,
-      guestFullName,
-      guestAge,
-      guestCountry,
-      guestPhone,
-      guestEmail,
-      surfLevel,
-      gender,
       travellers = [],
       total,
       insurance,
@@ -84,6 +77,109 @@ export async function POST(req: NextRequest) {
       paymentType,
       addOns = [],
     } = data;
+
+    // Calculate duration
+    const arrival = new Date(arrivalDate);
+    const checkout = checkoutDate ? new Date(checkoutDate) : null;
+    let duration: number | null = null;
+    let durationLabel: string | null = null;
+    if (checkout) {
+      const diffTime = checkout.getTime() - arrival.getTime();
+      duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // days
+      const DURATIONS: Record<number, string> = {
+        4: '4 days',
+        7: '1 week',
+        14: '2 weeks',
+        21: '3 weeks',
+        28: '4 weeks',
+      };
+      durationLabel = DURATIONS[duration] || `${duration} nights`;
+    }
+
+    // Aggregate traveller information
+    const allTravellerNames = travellers.map((t: any) => {
+      const fullName = `${t.firstName || ''} ${t.lastName || ''}`.trim();
+      return fullName || t.name || 'Guest';
+    }).join(', ');
+
+    const allTravellerFirstNames = travellers.map((t: any) => t.firstName || '').filter(Boolean).join(', ');
+    const allTravellerLastNames = travellers.map((t: any) => t.lastName || '').filter(Boolean).join(', ');
+    const allTravellerEmails = travellers.map((t: any) => t.email || '').filter(Boolean).join(', ');
+    const allTravellerPhones = travellers.map((t: any) => (t.phone || t.mobile || '')).filter(Boolean).join(', ');
+    const allTravellerCountries = travellers.map((t: any) => t.country || '').filter(Boolean).join(', ');
+    
+    // Calculate ages from birth dates
+    const allTravellerAges = travellers.map((t: any) => {
+      if (t.year && t.month && t.day) {
+        const birthDate = new Date(parseInt(t.year), parseInt(t.month) - 1, parseInt(t.day));
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age.toString();
+      }
+      return '';
+    }).filter(Boolean).join(', ');
+
+    const allTravellerBirthDates = travellers.map((t: any) => {
+      if (t.year && t.month && t.day) {
+        return `${t.year}-${String(t.month).padStart(2, '0')}-${String(t.day).padStart(2, '0')}`;
+      }
+      return '';
+    }).filter(Boolean).join(', ');
+
+    const allTravellerSurfLevels = travellers.map((t: any) => t.surfLevel || '').filter(Boolean).join(', ');
+    const allTravellerGenders = travellers.map((t: any) => t.gender || '').filter(Boolean).join(', ');
+
+    // Get add-on details, package and room prices from database
+    let addOnData: any[] = [];
+    let packagePrice: number | null = null;
+    let roomPrice: number | null = null;
+    
+    try {
+      const [addOnResult, packageResult, roomResult] = await Promise.all([
+        addOns.length > 0 
+          ? supabase.from('AddOn').select('id, name, price').in('id', addOns.map((a: any) => a.addOnId))
+          : Promise.resolve({ data: [] }),
+        supabase.from('Package').select('price').eq('id', packageId).single(),
+        supabase.from('Room').select('price').eq('id', roomId).single(),
+      ]);
+      
+      addOnData = addOnResult.data || [];
+      packagePrice = packageResult.data?.price || null;
+      roomPrice = roomResult.data?.price || null;
+    } catch (error) {
+      console.error('Error fetching add-on/package/room details:', error);
+    }
+
+    // Aggregate add-on information
+    const addOnIdsList: string[] = [];
+    const addOnNamesList: string[] = [];
+    let addOnsTotal = 0;
+    
+    if (addOnData.length > 0) {
+      addOns.forEach((addOn: any) => {
+        const addOnInfo = addOnData.find((a: any) => a.id === addOn.addOnId);
+        if (addOnInfo) {
+          addOnIdsList.push(addOnInfo.id);
+          addOnNamesList.push(addOnInfo.name);
+          addOnsTotal += addOnInfo.price || 0;
+        }
+      });
+    }
+
+    const addOnNames = addOnNamesList.join(', ');
+    const addOnIds = addOnIdsList.join(', ');
+    const addOnCount = addOns.length;
+
+    // Calculate pricing breakdown
+    const roomTotal = roomPrice ? roomPrice * people : 0;
+    const packageTotal = packagePrice ? packagePrice * people : 0;
+    const subtotal = packageTotal + roomTotal;
+    const insuranceAmount = insurance ? Math.round(subtotal * 0.1) : 0; // 10% of subtotal
+    const calculatedTotal = subtotal + addOnsTotal + insuranceAmount;
 
     // Validate required fields
     if (!packageId || !roomId || !arrivalDate || !people || !total) {
@@ -108,18 +204,34 @@ export async function POST(req: NextRequest) {
           roomName: roomName || null,
           arrivalDate: new Date(arrivalDate),
           checkoutDate: checkoutDate ? new Date(checkoutDate) : null,
+          duration: duration,
+          durationLabel: durationLabel,
           people: parseInt(people.toString()),
-          guestFullName: guestFullName || null,
-          guestAge: guestAge || null,
-          guestCountry: guestCountry || null,
-          guestPhone: guestPhone || null,
-          guestEmail: guestEmail || null,
-          surfLevel: surfLevel || null,
-          gender: gender || null,
+          travellerCount: travellers.length || parseInt(people.toString()),
+          allTravellerNames: allTravellerNames || null,
+          allTravellerFirstNames: allTravellerFirstNames || null,
+          allTravellerLastNames: allTravellerLastNames || null,
+          allTravellerEmails: allTravellerEmails || null,
+          allTravellerPhones: allTravellerPhones || null,
+          allTravellerCountries: allTravellerCountries || null,
+          allTravellerAges: allTravellerAges || null,
+          allTravellerBirthDates: allTravellerBirthDates || null,
+          allTravellerSurfLevels: allTravellerSurfLevels || null,
+          allTravellerGenders: allTravellerGenders || null,
+          addOnNames: addOnNames || null,
+          addOnIds: addOnIds || null,
+          addOnCount: addOnCount,
+          packagePrice: packagePrice,
+          roomPrice: roomPrice,
+          subtotal: subtotal,
+          addOnsTotal: addOnsTotal,
+          insuranceAmount: insuranceAmount,
+          total: parseInt(total.toString()),
+          currency: 'EUR',
           insurance: insurance || false,
           airportTransfer: airportTransfer || false,
           paymentType: paymentType || 'full',
-          total: parseInt(total.toString()),
+          bookingStatus: 'confirmed',
           travellers: {
             create: travellers.map((t: any) => ({
               name: t.name || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'Guest',
@@ -156,18 +268,34 @@ export async function POST(req: NextRequest) {
           roomName: roomName || null,
           arrivalDate: new Date(arrivalDate).toISOString(),
           checkoutDate: checkoutDate ? new Date(checkoutDate).toISOString() : null,
+          duration: duration,
+          durationLabel: durationLabel,
           people: parseInt(people.toString()),
-          guestFullName: guestFullName || null,
-          guestAge: guestAge || null,
-          guestCountry: guestCountry || null,
-          guestPhone: guestPhone || null,
-          guestEmail: guestEmail || null,
-          surfLevel: surfLevel || null,
-          gender: gender || null,
+          travellerCount: travellers.length || parseInt(people.toString()),
+          allTravellerNames: allTravellerNames || null,
+          allTravellerFirstNames: allTravellerFirstNames || null,
+          allTravellerLastNames: allTravellerLastNames || null,
+          allTravellerEmails: allTravellerEmails || null,
+          allTravellerPhones: allTravellerPhones || null,
+          allTravellerCountries: allTravellerCountries || null,
+          allTravellerAges: allTravellerAges || null,
+          allTravellerBirthDates: allTravellerBirthDates || null,
+          allTravellerSurfLevels: allTravellerSurfLevels || null,
+          allTravellerGenders: allTravellerGenders || null,
+          addOnNames: addOnNames || null,
+          addOnIds: addOnIds || null,
+          addOnCount: addOnCount,
+          packagePrice: packagePrice,
+          roomPrice: roomPrice,
+          subtotal: subtotal,
+          addOnsTotal: addOnsTotal,
+          insuranceAmount: insuranceAmount,
+          total: parseInt(total.toString()),
+          currency: 'EUR',
           insurance: insurance || false,
           airportTransfer: airportTransfer || false,
           paymentType: paymentType || 'full',
-          total: parseInt(total.toString()),
+          bookingStatus: 'confirmed',
         });
 
       if (bookingError) {

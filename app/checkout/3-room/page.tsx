@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import BookingSummary from "../../../components/BookingSummary";    
 import { useStore } from "../../../store/booking";
@@ -79,10 +79,260 @@ const bigdiRooms = [
 export default function RoomStep() {
   const { selectedPackage, people: maxPeople, arrivalDate, roomAssignments, setRoomAssignments } = useStore();
   const router = useRouter();
-  const checkIn = arrivalDate ? new Date(arrivalDate) : null;
-  const checkOut = checkIn ? new Date(checkIn) : null;
-  if (checkOut) checkOut.setDate(checkOut.getDate() + 7);
-  const TIMEZONE = 'Africa/Casablanca';
+  const [tripleRoomAvailability, setTripleRoomAvailability] = useState<{
+    bookedBeds: number;
+    availableBeds: number;
+    isFullyBooked: boolean;
+  } | null>(null);
+  const [twinRoomAvailability, setTwinRoomAvailability] = useState<{
+    bookedBeds: number;
+    availableBeds: number;
+    isFullyBooked: boolean;
+  } | null>(null);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [loadingTwinAvailability, setLoadingTwinAvailability] = useState(false);
+  const fetchRequestRef = useRef<string | null>(null);
+  const fetchTwinRequestRef = useRef<string | null>(null);
+
+  // Debug: Log component render and arrivalDate
+  console.log('🚀 RoomStep component rendered. arrivalDate:', arrivalDate);
+  console.log('🚀 Store state:', { arrivalDate, maxPeople, selectedPackage: selectedPackage?.name });
+
+  // Fetch bed availability for Triple room (id: "2")
+  useEffect(() => {
+    if (!arrivalDate) {
+      console.log('No arrivalDate, clearing availability');
+      setTripleRoomAvailability(null);
+      setLoadingAvailability(false);
+      fetchRequestRef.current = null;
+      return;
+    }
+
+    // Ensure arrivalDate is in YYYY-MM-DD format
+    const dateParam = arrivalDate.includes('T') 
+      ? arrivalDate.split('T')[0] 
+      : arrivalDate;
+    
+    // Create a unique request ID for this fetch
+    const requestId = `${dateParam}-triple-${Date.now()}`;
+    fetchRequestRef.current = requestId;
+    
+    console.log('🔄 Fetching Triple room availability for date:', dateParam, 'Request ID:', requestId);
+    
+    // Abort controller to cancel previous requests
+    const abortController = new AbortController();
+    
+    // Set loading state immediately
+    setLoadingAvailability(true);
+    
+    const fetchTripleRoomAvailability = async () => {
+      try {
+        const timeoutId = setTimeout(() => abortController.abort(), 10000); // 10 second timeout
+        
+        const response = await fetch(
+          `/api/room-availability?roomId=2&arrivalDate=${dateParam}`,
+          { signal: abortController.signal }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        // Check if this is still the current request (prevent stale responses)
+        if (fetchRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for request:', requestId);
+          return;
+        }
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Failed to fetch Triple room availability:', response.status, errorText);
+          // On error, assume unavailable for safety
+          if (fetchRequestRef.current === requestId) {
+            setTripleRoomAvailability({
+              bookedBeds: 3,
+              availableBeds: 0,
+              isFullyBooked: true,
+            });
+            setLoadingAvailability(false);
+          }
+          return;
+        }
+        
+        const data = await response.json();
+        console.log('📦 Triple room availability data received for request:', requestId, data);
+        
+        // Double-check this is still the current request before updating state
+        if (fetchRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for request:', requestId);
+          return;
+        }
+        
+        const availability = {
+          bookedBeds: data.bookedBeds || 0,
+          availableBeds: data.availableBeds ?? 3,
+          isFullyBooked: data.isFullyBooked === true,
+        };
+        
+        console.log('✅ Setting Triple room availability for request:', requestId, availability);
+        
+        // Update both states together to prevent flickering
+        setTripleRoomAvailability(availability);
+        setLoadingAvailability(false);
+        
+      } catch (error) {
+        // Check if this is still the current request
+        if (fetchRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale request:', requestId);
+          return;
+        }
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('⚠️ Request aborted for:', requestId);
+          // Don't update state if request was aborted (new request is in progress)
+          return;
+        } else {
+          console.error('❌ Error fetching Triple room availability:', error);
+        }
+        
+        // On error, assume unavailable for safety
+        if (fetchRequestRef.current === requestId) {
+          setTripleRoomAvailability({
+            bookedBeds: 3,
+            availableBeds: 0,
+            isFullyBooked: true,
+          });
+          setLoadingAvailability(false);
+        }
+      }
+    };
+
+    // Call immediately
+    fetchTripleRoomAvailability();
+    
+    // Cleanup: cancel the request if component unmounts or arrivalDate changes
+    return () => {
+      console.log('🧹 Cleaning up Triple room request:', requestId);
+      abortController.abort();
+      // Don't clear fetchRequestRef here - let the new request set it
+    };
+  }, [arrivalDate]);
+
+  // Fetch bed availability for Twin room (id: "4")
+  useEffect(() => {
+    if (!arrivalDate) {
+      console.log('No arrivalDate, clearing Twin room availability');
+      setTwinRoomAvailability(null);
+      setLoadingTwinAvailability(false);
+      fetchTwinRequestRef.current = null;
+      return;
+    }
+
+    // Ensure arrivalDate is in YYYY-MM-DD format
+    const dateParam = arrivalDate.includes('T') 
+      ? arrivalDate.split('T')[0] 
+      : arrivalDate;
+    
+    // Create a unique request ID for this fetch
+    const requestId = `${dateParam}-twin-${Date.now()}`;
+    fetchTwinRequestRef.current = requestId;
+    
+    console.log('🔄 Fetching Twin room availability for date:', dateParam, 'Request ID:', requestId);
+    
+    // Abort controller to cancel previous requests
+    const abortController = new AbortController();
+    
+    // Set loading state immediately
+    setLoadingTwinAvailability(true);
+    
+    const fetchTwinRoomAvailability = async () => {
+      try {
+        const timeoutId = setTimeout(() => abortController.abort(), 10000); // 10 second timeout
+        
+        const response = await fetch(
+          `/api/room-availability?roomId=4&arrivalDate=${dateParam}`,
+          { signal: abortController.signal }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        // Check if this is still the current request (prevent stale responses)
+        if (fetchTwinRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response for Twin room request:', requestId);
+          return;
+        }
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Failed to fetch Twin room availability:', response.status, errorText);
+          // On error, assume unavailable for safety
+          if (fetchTwinRequestRef.current === requestId) {
+            setTwinRoomAvailability({
+              bookedBeds: 2,
+              availableBeds: 0,
+              isFullyBooked: true,
+            });
+            setLoadingTwinAvailability(false);
+          }
+          return;
+        }
+        
+        const data = await response.json();
+        console.log('📦 Twin room availability data received for request:', requestId, data);
+        
+        // Double-check this is still the current request before updating state
+        if (fetchTwinRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring stale response data for Twin room request:', requestId);
+          return;
+        }
+        
+        const availability = {
+          bookedBeds: data.bookedBeds || 0,
+          availableBeds: data.availableBeds ?? 2,
+          isFullyBooked: data.isFullyBooked === true,
+        };
+        
+        console.log('✅ Setting Twin room availability for request:', requestId, availability);
+        
+        // Update both states together to prevent flickering
+        setTwinRoomAvailability(availability);
+        setLoadingTwinAvailability(false);
+        
+      } catch (error) {
+        // Check if this is still the current request
+        if (fetchTwinRequestRef.current !== requestId) {
+          console.log('⚠️ Ignoring error for stale Twin room request:', requestId);
+          return;
+        }
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('⚠️ Twin room request aborted for:', requestId);
+          // Don't update state if request was aborted (new request is in progress)
+          return;
+        } else {
+          console.error('❌ Error fetching Twin room availability:', error);
+        }
+        
+        // On error, assume unavailable for safety
+        if (fetchTwinRequestRef.current === requestId) {
+          setTwinRoomAvailability({
+            bookedBeds: 2,
+            availableBeds: 0,
+            isFullyBooked: true,
+          });
+          setLoadingTwinAvailability(false);
+        }
+      }
+    };
+
+    // Call immediately
+    fetchTwinRoomAvailability();
+    
+    // Cleanup: cancel the request if component unmounts or arrivalDate changes
+    return () => {
+      console.log('🧹 Cleaning up Twin room request:', requestId);
+      abortController.abort();
+      // Don't clear fetchTwinRequestRef here - let the new request set it
+    };
+  }, [arrivalDate]);
 
   // Calculate total assigned people
   const totalAssigned = Object.values(roomAssignments).reduce((sum, n) => sum + n, 0);
@@ -91,11 +341,48 @@ export default function RoomStep() {
   const handleChange = (roomId: string, delta: number) => {
     const current = roomAssignments[roomId] || 0;
     let next = { ...roomAssignments };
-    if (delta === 1 && totalAssigned < maxPeople && current < 2) {
-      next[roomId] = current + 1;
-    } else if (delta === -1 && current > 0) {
-      next[roomId] = current - 1;
+    
+    // Special handling for Triple room (id: "2")
+    if (roomId === "2") {
+      const isFullyBooked = tripleRoomAvailability?.isFullyBooked || false;
+      const availableBeds = tripleRoomAvailability?.availableBeds || 3;
+      const maxForTripleRoom = Math.min(availableBeds, 3); // Max 3 beds, but limited by availability
+      
+      // Prevent changes if room is fully booked
+      if (isFullyBooked) {
+        return;
+      }
+      
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForTripleRoom) {
+        next[roomId] = current + 1;
+      } else if (delta === -1 && current > 0) {
+        next[roomId] = current - 1;
+      }
+    } else if (roomId === "4") {
+      // Twin room: max based on available beds
+      const isFullyBooked = twinRoomAvailability?.isFullyBooked || false;
+      const availableBeds = twinRoomAvailability?.availableBeds ?? 2;
+      const maxForTwinRoom = Math.min(availableBeds, 2); // Max 2 beds, but limited by availability
+      
+      // Prevent changes if room is fully booked
+      if (isFullyBooked) {
+        return;
+      }
+      
+      if (delta === 1 && totalAssigned < maxPeople && current < maxForTwinRoom) {
+        next[roomId] = current + 1;
+      } else if (delta === -1 && current > 0) {
+        next[roomId] = current - 1;
+      }
+    } else {
+      // Other rooms: max 2 people
+      if (delta === 1 && totalAssigned < maxPeople && current < 2) {
+        next[roomId] = current + 1;
+      } else if (delta === -1 && current > 0) {
+        next[roomId] = current - 1;
+      }
     }
+    
     setRoomAssignments(next);
   };
 
@@ -108,6 +395,15 @@ export default function RoomStep() {
       <div className="w-full md:w-[70%] py-8">
         <h2 className="text-2xl font-bold mb-2">Select your room type</h2>
         <div className="text-gray-500 mb-8 text-base">Price add-on per room for the duration</div>
+        {/* Debug info - remove after testing */}
+        <div className="mb-4 p-2 bg-yellow-100 border border-yellow-400 rounded text-sm">
+          <strong>Debug Info:</strong><br/>
+          Arrival Date: {arrivalDate || 'NOT SET'} | <br/>
+          Triple Room Availability: {tripleRoomAvailability ? 
+            `Booked: ${tripleRoomAvailability.bookedBeds}, Available: ${tripleRoomAvailability.availableBeds}, Fully Booked: ${tripleRoomAvailability.isFullyBooked}` 
+            : 'NULL (not loaded yet)'} | <br/>
+          Loading: {loadingAvailability ? 'YES' : 'NO'}
+        </div>
         <div className="w-full mb-8">
           <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px] font-normal" style={{ fontFamily: 'Nunito, sans-serif', width: '100%', fontWeight: 400 }}>
             <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
@@ -119,23 +415,113 @@ export default function RoomStep() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {oubahaRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
+              const isTripleRoom = room.id === "2";
+              const isTwinRoom = room.id === "4";
+              
+              // For Triple room and Twin room, use availability data; for others, default values
+              let isFullyBooked = false;
+              let availableBeds = 2;
+              let maxForRoom = 2;
+              let isLoading = false;
+              
+              if (isTripleRoom) {
+                // Only use availability data if it's loaded AND not currently loading
+                // This prevents flickering between states
+                if (tripleRoomAvailability !== null && !loadingAvailability) {
+                  // Data loaded - use actual availability
+                  isFullyBooked = tripleRoomAvailability.isFullyBooked === true;
+                  availableBeds = tripleRoomAvailability.availableBeds ?? 3;
+                  maxForRoom = Math.min(availableBeds, 3);
+                } else if (loadingAvailability) {
+                  // While loading, show as unavailable with "Checking..." message
+                  isFullyBooked = true;
+                  availableBeds = 0;
+                  maxForRoom = 0;
+                  isLoading = true;
+                } else {
+                  // No data and not loading - initial state (shouldn't happen with arrivalDate)
+                  // Default to available but this will update once data loads
+                  isFullyBooked = false;
+                  availableBeds = 3;
+                  maxForRoom = 3;
+                }
+              } else if (isTwinRoom) {
+                // Only use availability data if it's loaded AND not currently loading
+                // This prevents flickering between states
+                if (twinRoomAvailability !== null && !loadingTwinAvailability) {
+                  // Data loaded - use actual availability
+                  isFullyBooked = twinRoomAvailability.isFullyBooked === true;
+                  availableBeds = twinRoomAvailability.availableBeds ?? 2;
+                  maxForRoom = Math.min(availableBeds, 2);
+                } else if (loadingTwinAvailability) {
+                  // While loading, show as unavailable with "Checking..." message
+                  isFullyBooked = true;
+                  availableBeds = 0;
+                  maxForRoom = 0;
+                  isLoading = true;
+                } else {
+                  // No data and not loading - initial state (shouldn't happen with arrivalDate)
+                  // Default to available but this will update once data loads
+                  isFullyBooked = false;
+                  availableBeds = 2;
+                  maxForRoom = 2;
+                }
+              }
+              
+              // Debug log for Triple room and Twin room
+              if (isTripleRoom) {
+                console.log('Triple room rendering:', {
+                  availability: tripleRoomAvailability,
+                  loading: loadingAvailability,
+                  isFullyBooked,
+                  availableBeds,
+                  maxForRoom,
+                });
+              } else if (isTwinRoom) {
+                console.log('Twin room rendering:', {
+                  availability: twinRoomAvailability,
+                  loading: loadingTwinAvailability,
+                  isFullyBooked,
+                  availableBeds,
+                  maxForRoom,
+                });
+              }
+              
               return (
-                <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative`}>
-                  <div className="absolute top-0 left-0 w-full bg-lapoint-red text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl">
-                    Room is not bookable for 1 person
+                <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative ${(isTripleRoom && loadingAvailability) || (isTwinRoom && loadingTwinAvailability) ? 'opacity-90' : ''}`}>
+                  {/* Banner - grey when unavailable, red when available */}
+                  <div className={`absolute top-0 left-0 w-full ${isFullyBooked ? 'bg-gray-500' : 'bg-lapoint-red'} text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl`}>
+                    {(isTripleRoom && loadingAvailability) || (isTwinRoom && loadingTwinAvailability)
+                      ? 'Checking availability...' 
+                      : isFullyBooked 
+                        ? 'Room not available' 
+                        : 'Room is not bookable for 1 person'}
                   </div>
-                  <Image src={room.img} alt={room.name} width={600} height={400} quality={100} className="w-full h-56 object-cover" />
+                  {/* Image with low opacity when unavailable or loading */}
+                  <Image 
+                    src={room.img} 
+                    alt={room.name} 
+                    width={600} 
+                    height={400} 
+                    quality={100} 
+                    className={`w-full h-56 object-cover ${isFullyBooked || isLoading ? 'opacity-50' : ''}`} 
+                  />
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="font-semibold text-base mb-2">{room.name}</div>
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-lapoint-red font-bold">+ EUR {room.price}</div>
+                        <div className={`font-bold ${
+                          room.price === 0 && isFullyBooked 
+                            ? 'text-gray-500' 
+                            : 'text-lapoint-red'
+                        }`}>+ EUR {room.price}</div>
                         <div className="text-sm text-gray-600">Number of people</div>
                       </div>
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
-                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={isFullyBooked || isLoading}
                         >
                           View room
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,20 +531,20 @@ export default function RoomStep() {
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
                             aria-label="Decrease number of people"
                             onClick={() => handleChange(room.id, -1)}
-                            disabled={assigned === 0}
+                            disabled={assigned === 0 || isFullyBooked || isLoading}
                           >
                             –
                           </button>
                           <span className="w-8 text-center font-bold">{assigned}</span>
                           <button
                             type="button"
-                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white"
+                            className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
                             aria-label="Increase number of people"
                             onClick={() => handleChange(room.id, 1)}
-                            disabled={assigned >= 2 || totalAssigned >= maxPeople}
+                            disabled={assigned >= maxForRoom || totalAssigned >= maxPeople || isFullyBooked || isLoading}
                           >
                             +
                           </button>
@@ -178,6 +564,8 @@ export default function RoomStep() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {bigdiRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
+              // Bigdi rooms are not Triple rooms, so they're never fully booked
+              const isFullyBooked = false;
               return (
                 <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative`}>
                   <div className="absolute top-0 left-0 w-full bg-lapoint-red text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl">
@@ -188,9 +576,13 @@ export default function RoomStep() {
                     <div>
                       <div className="font-semibold text-base mb-2">{room.name}</div>
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-lapoint-red font-bold">+ EUR {room.price}</div>
+                        <div className={`font-bold ${
+                          room.price === 0 && isFullyBooked 
+                            ? 'text-gray-500' 
+                            : 'text-lapoint-red'
+                        }`}>+ EUR {room.price}</div>
                         <div className="text-sm text-gray-600">Number of people</div>
-                      </div>
+                    </div>
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
@@ -202,25 +594,25 @@ export default function RoomStep() {
                           </svg>
                         </button>
                         <div className="flex items-center gap-2">
-                          <button
-                            type="button"
+                      <button
+                        type="button"
                             className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white"
-                            aria-label="Decrease number of people"
-                            onClick={() => handleChange(room.id, -1)}
-                            disabled={assigned === 0}
-                          >
-                            –
-                          </button>
-                          <span className="w-8 text-center font-bold">{assigned}</span>
-                          <button
-                            type="button"
+                        aria-label="Decrease number of people"
+                        onClick={() => handleChange(room.id, -1)}
+                        disabled={assigned === 0}
+                      >
+                        –
+                      </button>
+                      <span className="w-8 text-center font-bold">{assigned}</span>
+                      <button
+                        type="button"
                             className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white"
-                            aria-label="Increase number of people"
-                            onClick={() => handleChange(room.id, 1)}
-                            disabled={assigned >= 2 || totalAssigned >= maxPeople}
-                          >
-                            +
-                          </button>
+                        aria-label="Increase number of people"
+                        onClick={() => handleChange(room.id, 1)}
+                        disabled={assigned >= 2 || totalAssigned >= maxPeople}
+                      >
+                        +
+                      </button>
                         </div>
                       </div>
                     </div>
