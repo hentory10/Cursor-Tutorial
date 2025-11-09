@@ -91,25 +91,25 @@ export default function BookingSummary({ buttonLabel = 'ROOM SELECTION →', onB
   }, [pathname, selectedPackage, arrivalDate, roomAssignments, selectedAddOns, addOnCounts]);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Trip summary</h2>
-      <div className="bg-white border border-gray-300 rounded-2xl p-6 mb-8">
-        <div className="font-bold text-lg mb-4">Your selections</div>
-        <div className="mb-4">
-          <div className="font-semibold text-base mb-1">Travellers & courses</div>
-          <div>
+    <div className="w-full">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Trip summary</h2>
+      <div className="bg-white border border-gray-300 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="font-bold text-base sm:text-lg mb-3 sm:mb-4">Your selections</div>
+        <div className="mb-3 sm:mb-4">
+          <div className="font-semibold text-sm sm:text-base mb-1">Travellers & courses</div>
+          <div className="text-sm sm:text-base">
             <span>{selectedPackage ? `${people} x ${selectedPackage.name}` : '-'}</span>
           </div>
         </div>
         <hr className="my-2" />
-        <div className="mb-4">
-          <div className="font-semibold text-base mb-1">Dates</div>
-          <span>{dateLabel}</span>
+        <div className="mb-3 sm:mb-4">
+          <div className="font-semibold text-sm sm:text-base mb-1">Dates</div>
+          <span className="text-sm sm:text-base">{dateLabel}</span>
         </div>
         <hr className="my-2" />
-        <div className="mb-4">
-          <div className="font-semibold text-base mb-1">Rooms</div>
-          <span>
+        <div className="mb-3 sm:mb-4">
+          <div className="font-semibold text-sm sm:text-base mb-1">Rooms</div>
+          <span className="text-sm sm:text-base break-words">
             {roomAssignments && Object.values(roomAssignments).some(n => n > 0)
               ? Object.entries(roomAssignments)
                   .filter(([_, n]) => n > 0)
@@ -124,7 +124,7 @@ export default function BookingSummary({ buttonLabel = 'ROOM SELECTION →', onB
         </div>
         <hr className="my-2" />
         <div>
-          <div className="font-semibold text-base mb-1">Add-on selection</div>
+          <div className="font-semibold text-sm sm:text-base mb-1">Add-on selection</div>
           {selectedAddOns.length > 0 ? (
             <div className="space-y-1">
               {selectedAddOns.map(id => {
@@ -156,12 +156,12 @@ export default function BookingSummary({ buttonLabel = 'ROOM SELECTION →', onB
       {/* Hide total and button on step 5 (travellers page) */}
       {!pathname.includes('/checkout/5-travellers') && (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <span className="text-base font-medium">Total amount to pay</span>
-            <span className="text-lg font-bold">EUR {summary.total}</span>
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <span className="text-sm sm:text-base font-medium">Total amount to pay</span>
+            <span className="text-base sm:text-lg font-bold">EUR {summary.total}</span>
           </div>
           <button
-            className={`w-full font-bold text-base py-3 rounded-xl mb-6 flex items-center justify-center gap-2 transition-colors ${buttonEnabled ? 'bg-lapoint-red text-white' : 'bg-gray-300 text-gray-400 cursor-not-allowed'}`}
+            className={`w-full font-bold text-sm sm:text-base py-2.5 sm:py-3 rounded-xl mb-4 sm:mb-6 flex items-center justify-center gap-2 transition-colors ${buttonEnabled ? 'bg-lapoint-red text-white' : 'bg-gray-300 text-gray-400 cursor-not-allowed'}`}
             onClick={onButtonClick}
             disabled={!buttonEnabled}
           >
@@ -171,11 +171,11 @@ export default function BookingSummary({ buttonLabel = 'ROOM SELECTION →', onB
       )}
       {!pathname.includes('/checkout/5-travellers') && (
         <>
-          <hr className="mb-4" />
-          <div className="flex gap-6 justify-center items-center mb-2">
-            <img src="/images/paypal.svg" alt="PayPal" className="h-10" />
-            <img src="/images/mastercard.svg" alt="Mastercard" className="h-10" />
-            <img src="/images/visa.svg" alt="Visa" className="h-10" />
+          <hr className="mb-3 sm:mb-4" />
+          <div className="flex gap-4 sm:gap-6 justify-center items-center mb-2">
+            <img src="/images/paypal.svg" alt="PayPal" className="h-8 sm:h-10" />
+            <img src="/images/mastercard.svg" alt="Mastercard" className="h-8 sm:h-10" />
+            <img src="/images/visa.svg" alt="Visa" className="h-8 sm:h-10" />
           </div>
         </>
       )}

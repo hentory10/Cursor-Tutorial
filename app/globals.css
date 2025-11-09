@@ -28,4 +28,14 @@ input, select, textarea {
 
 .selected-date-text {
   color: rgb(255, 59, 48) !important;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 } 

@@ -18,13 +18,13 @@ export default function ProgressBar() {
 
   return (
     <div className="w-full bg-lapoint-yellow pb-0">
-      <div className="relative max-w-7xl mx-auto pt-8 pb-2 px-4">
-        <div className="flex justify-between items-end" style={{ fontSize: 14 }}>
+      <div className="relative max-w-7xl mx-auto pt-4 sm:pt-8 pb-2 px-2 sm:px-4">
+        <div className="flex justify-between items-end gap-1 sm:gap-2 overflow-x-auto scrollbar-hide" style={{ fontSize: 'clamp(10px, 2.5vw, 14px)' }}>
           {steps.map((step, i) => (
-            <div key={step.path} className="flex-1 text-center">
+            <div key={step.path} className="flex-1 text-center min-w-0">
               <span
-                className={`font-semibold ${i <= currentStep ? 'text-lapoint-red' : 'text-gray-400'} ${i === currentStep ? 'font-bold' : ''}`}
-                style={{ fontSize: 14 }}
+                className={`font-semibold whitespace-nowrap ${i <= currentStep ? 'text-lapoint-red' : 'text-gray-400'} ${i === currentStep ? 'font-bold' : ''}`}
+                style={{ fontSize: 'clamp(10px, 2.5vw, 14px)' }}
               >
                 {step.label}
               </span>
@@ -32,7 +32,7 @@ export default function ProgressBar() {
           ))}
         </div>
         {/* Continuous red progress line under all completed/active steps */}
-        <div className="absolute left-0 right-0" style={{ bottom: 0, height: 2 }}>
+        <div className="absolute left-2 sm:left-4 right-2 sm:right-4" style={{ bottom: 0, height: 2 }}>
           <div
             className="bg-lapoint-red rounded"
             style={{
@@ -45,7 +45,7 @@ export default function ProgressBar() {
           />
         </div>
       </div>
-      <div className="w-full max-w-7xl mx-auto bg-yellow-300 text-lapoint-dark text-center font-bold py-2 text-base border-t border-yellow-200 px-4">
+      <div className="max-w-7xl mx-auto bg-yellow-300 text-lapoint-dark text-center font-bold py-2 text-xs sm:text-base border-t border-yellow-200 ml-2 sm:ml-4 mr-2 sm:mr-4">
         Free rebooking up to 14 days prior to arrival.
       </div>
     </div>

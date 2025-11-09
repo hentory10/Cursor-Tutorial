@@ -48,19 +48,19 @@ export default function PackageStep() {
   // Per-package included items now live in store packages (pkg.includedItems)
 
   return (
-    <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
-        <div className="w-full md:w-[70%] py-8">
-        <div className="w-full mb-8" ref={durationRef}>
-          <div className="mb-6">
-            <div className="font-bold text-2xl mb-2">Select duration</div>
-            <div className="flex gap-3 flex-wrap">
+    <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 min-h-screen max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="w-full lg:w-[70%] py-4 sm:py-6 lg:py-8">
+        <div className="w-full mb-6 sm:mb-8" ref={durationRef}>
+          <div className="mb-4 sm:mb-6">
+            <div className="font-bold text-xl sm:text-2xl mb-2">Select duration</div>
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               {DURATIONS.map(d => {
                 const isDisabled = d.value !== '1w';
                 return (
                   <button
                     key={d.value}
                     type="button"
-                    className={`px-6 py-2 rounded-lg border font-semibold transition-all ${duration === d.value ? 'bg-lapoint-red text-white border-lapoint-red' : 'bg-white text-lapoint-dark border-lapoint-border hover:bg-lapoint-yellow'} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-3 sm:px-6 py-2 rounded-lg border font-semibold transition-all text-xs sm:text-base ${duration === d.value ? 'bg-lapoint-red text-white border-lapoint-red' : 'bg-white text-lapoint-dark border-lapoint-border hover:bg-lapoint-yellow'} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onClick={() => !isDisabled && setDuration(d.value)}
                     disabled={isDisabled}
                     aria-pressed={duration === d.value}
@@ -72,7 +72,7 @@ export default function PackageStep() {
             </div>
           </div>
           <div className="w-full mb-4">
-            <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
+            <div className="rounded-full bg-yellow-300 px-3 sm:px-6 py-2 text-lapoint-dark text-[10px] sm:text-xs" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
               <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
             </div>
           </div>
@@ -84,52 +84,54 @@ export default function PackageStep() {
             handleNext();
           }}
         >
-          <h2 id="package-step-title" className="text-2xl mb-4">Select your package</h2>
+          <h2 id="package-step-title" className="text-xl sm:text-2xl mb-3 sm:mb-4">Select your package</h2>
           {error && <ErrorSummary message={error} />}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {packages.map(pkg => (
-              <div key={pkg.id} className={`card flex flex-col gap-4 ${selectedPackage?.id === pkg.id ? 'border-lapoint-red border-2' : ''}`}>
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-                  <div className="flex flex-col min-w-[220px]">
-                    <div className="text-lg font-bold mb-1">{pkg.name}</div>
+              <div key={pkg.id} className={`card flex flex-col gap-3 sm:gap-4 ${selectedPackage?.id === pkg.id ? 'border-lapoint-red border-2' : ''}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full">
+                  <div className="flex flex-col w-full sm:min-w-[220px]">
+                    <div className="text-base sm:text-lg font-bold mb-1">{pkg.name}</div>
                     {/* description removed per request */}
-                    <div className="text-lapoint-red font-bold">From EUR {pkg.price}</div>
+                    <div className="text-lapoint-red font-bold text-sm sm:text-base">From EUR {pkg.price}</div>
                   </div>
-                  <div className="flex items-center gap-2 ml-auto">
+                  <div className="flex items-center gap-2 sm:ml-auto flex-wrap">
                     <button
                       type="button"
-                      className="btn-outline flex items-center gap-2 px-6 py-2 text-base font-semibold border-2 rounded-xl transition-all w-fit"
+                      className="btn-outline flex items-center gap-2 px-3 sm:px-6 py-2 text-xs sm:text-sm md:text-base font-semibold border-2 rounded-xl transition-all w-full sm:w-fit"
                       onClick={() => setOpenIncluded(openIncluded === pkg.id ? null : pkg.id)}
                       aria-pressed={openIncluded === pkg.id}
                     >
                       What's included
                       <span className={`transition-transform ${openIncluded === pkg.id ? 'rotate-180' : ''}`}>▾</span>
                     </button>
-                    <button
-                      type="button"
-                      className="w-8 h-8 rounded-full border border-gray-300 text-gray-400 flex items-center justify-center text-xl disabled:opacity-50"
-                      aria-label="Decrease number of people"
-                      onClick={() => setPeople(Math.max(1, people - 1))}
-                      disabled={selectedPackage?.id !== pkg.id || people <= 1}
-                    >
-                      –
-                    </button>
-                    <span className="w-8 text-center font-bold">{selectedPackage?.id === pkg.id ? people : 0}</span>
-                    <button
-                      type="button"
-                      className="w-8 h-8 rounded-full border border-lapoint-red text-white bg-lapoint-red flex items-center justify-center text-xl"
-                      aria-label="Increase number of people"
-                      onClick={() => {
-                        if (selectedPackage?.id === pkg.id) {
-                          setPeople(people + 1);
-                        } else {
-                          setPackage(pkg.id);
-                          setPeople(1);
-                        }
-                      }}
-                    >
-                      +
-                    </button>
+                    <div className="flex items-center gap-2 ml-auto sm:ml-0">
+                      <button
+                        type="button"
+                        className="w-8 h-8 rounded-full border border-gray-300 text-gray-400 flex items-center justify-center text-xl disabled:opacity-50"
+                        aria-label="Decrease number of people"
+                        onClick={() => setPeople(Math.max(1, people - 1))}
+                        disabled={selectedPackage?.id !== pkg.id || people <= 1}
+                      >
+                        –
+                      </button>
+                      <span className="w-8 text-center font-bold">{selectedPackage?.id === pkg.id ? people : 0}</span>
+                      <button
+                        type="button"
+                        className="w-8 h-8 rounded-full border border-lapoint-red text-white bg-lapoint-red flex items-center justify-center text-xl"
+                        aria-label="Increase number of people"
+                        onClick={() => {
+                          if (selectedPackage?.id === pkg.id) {
+                            setPeople(people + 1);
+                          } else {
+                            setPackage(pkg.id);
+                            setPeople(1);
+                          }
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
                 {openIncluded === pkg.id && (
@@ -150,7 +152,7 @@ export default function PackageStep() {
           </div>
         </form>
         </div>
-        <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
+        <div className="w-full lg:w-[25%] flex-shrink-0 mt-4 sm:mt-6 lg:mt-8">
           <BookingSummary buttonLabel="DATE SELECTION →" onButtonClick={handleNext} />
         </div>
     </div>

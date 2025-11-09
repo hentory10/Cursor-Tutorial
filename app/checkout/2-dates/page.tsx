@@ -113,41 +113,40 @@ export default function DateStep() {
   const TIMEZONE = 'Africa/Casablanca';
 
   return (
-    <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
-      <div className="w-full md:w-[70%] py-8">
-        <h2 className="text-2xl font-bold mb-6">Select dates</h2>
+    <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 min-h-screen max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="w-full lg:w-[70%] py-4 sm:py-6 lg:py-8">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Select dates</h2>
         {error && <ErrorSummary message={error} />}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           {isClient && (
             <>
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-lg font-bold">
-                  {days === 4 ? '4 days' : days === 7 ? '1 week' : `${days} nights`}<br />
-                  {checkIn && checkOut ? `${checkIn.toLocaleDateString('en-GB', { timeZone: TIMEZONE })} - ${checkOut.toLocaleDateString('en-GB', { timeZone: TIMEZONE })}` : ''}
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="text-base sm:text-lg font-bold">
+                  {days === 4 ? '4 days' : days === 7 ? '1 week' : `${days} nights`}<br className="hidden sm:block" />
+                  <span className="block sm:inline"> {checkIn && checkOut ? `${checkIn.toLocaleDateString('en-GB', { timeZone: TIMEZONE })} - ${checkOut.toLocaleDateString('en-GB', { timeZone: TIMEZONE })}` : ''}</span>
                 </div>
               </div>
               {/* Discount banner */}
               <div className="w-full mb-4">
-                <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px]" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
+                <div className="rounded-full bg-yellow-300 px-3 sm:px-6 py-2 text-lapoint-dark text-[10px] sm:text-xs" style={{ display: 'inline-block', width: '100%', fontWeight: 400 }}>
                   <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col gap-4 sm:gap-6 w-full">
                 <div className="flex items-center justify-between w-full mb-2">
                   <button
                     onClick={() => setMonthOffset(m => m - 1)}
                     aria-label="Previous month"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-lapoint-red text-white text-2xl shadow hover:scale-105 transition"
-                    style={{ minWidth: 40, minHeight: 40 }}
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-lapoint-red text-white shadow hover:scale-105 transition flex-shrink-0"
                   >
-                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                       <path d="M20 8L12 16L20 24" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
-                  <div className="flex-1 flex justify-between items-center gap-8">
+                  <div className="flex-1 flex justify-center sm:justify-between items-center gap-2 sm:gap-4 md:gap-8 px-2">
                     {[leftMonth, rightMonth].map((month, idx) => (
                       <div key={idx} className="flex-1 flex flex-col items-center">
-                        <div className="text-center font-bold mb-2 text-xl">
+                        <div className="text-center font-bold mb-2 text-sm sm:text-base md:text-xl">
                           {month.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: TIMEZONE })}
                         </div>
                       </div>
@@ -156,19 +155,18 @@ export default function DateStep() {
                   <button
                     onClick={() => setMonthOffset(m => m + 1)}
                     aria-label="Next month"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-lapoint-red text-white text-2xl shadow hover:scale-105 transition"
-                    style={{ minWidth: 40, minHeight: 40 }}
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-lapoint-red text-white shadow hover:scale-105 transition flex-shrink-0"
                   >
-                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                       <path d="M12 8L20 16L12 24" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
                 </div>
-                <div className="flex gap-8 w-full">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 w-full">
                   {[{ matrix: leftMatrix, month: leftMonth }, { matrix: rightMatrix, month: rightMonth }].map(({ matrix, month }, idx) => (
-                    <div key={idx} className="bg-white rounded-lg p-4 border flex-1">
-                      <div className="grid grid-cols-7 text-center text-gray-400 mb-1 text-lg font-semibold">
-                        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d, i) => <div key={i}>{d}</div>)}
+                    <div key={idx} className="bg-white rounded-lg p-2 sm:p-4 border flex-1 w-full">
+                      <div className="grid grid-cols-7 text-center text-gray-400 mb-1 text-xs sm:text-sm md:text-base lg:text-lg font-semibold">
+                        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d, i) => <div key={i} className="px-1">{d}</div>)}
                       </div>
                       {matrix.map((week, wi) => (
                         <div key={wi} className="grid grid-cols-7 text-center">
@@ -183,10 +181,10 @@ export default function DateStep() {
                               <button
                                 key={di}
                                 type="button"
-                                className={`w-9 h-9 rounded-full mx-auto my-1 text-sm font-semibold transition-all
+                                className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full mx-auto my-0.5 sm:my-1 text-xs sm:text-sm font-semibold transition-all
                                   ${isCurrentMonth ? '' : 'opacity-30'}
                                   ${isInSelectedRange ? 'bg-lapoint-yellow text-lapoint-dark' : ''}
-                                  ${isSelected ? 'bg-lapoint-red !border-lapoint-red !border-2 selected-date-text' : ''}
+                                  ${isSelected ? 'bg-lapoint-red !border-lapoint-red !border-2 selected-date-text text-white' : ''}
                                   ${isCheckOut ? 'border-2 border-lapoint-red' : ''}
                                   ${isMonday && isCurrentMonth ? 'border border-lapoint-red' : ''}
                                 `}
@@ -208,7 +206,7 @@ export default function DateStep() {
           )}
         </div>
       </div>
-      <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
+      <div className="w-full lg:w-[25%] flex-shrink-0 mt-4 sm:mt-6 lg:mt-8">
         <BookingSummary buttonLabel="ROOM SELECTION →" onButtonClick={handleNext} />
       </div>
     </div>

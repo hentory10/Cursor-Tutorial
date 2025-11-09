@@ -243,16 +243,16 @@ export default function TravellersStep() {
   };
   
   return (
-    <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
-      <div className="w-full md:w-[70%] py-8">
+    <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 min-h-screen max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="w-full lg:w-[70%] py-4 sm:py-6 lg:py-8">
         {travellers.map((t, idx) => (
-          <div key={idx} id={`traveller-${idx}`} className="bg-white rounded-2xl border border-gray-300 p-8 mb-8">
-            <h2 className="text-xl font-bold mb-6">Traveller # {idx + 1} <span className="font-normal">Information</span></h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div key={idx} id={`traveller-${idx}`} className="bg-white rounded-2xl border border-gray-300 p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 lg:mb-8">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Traveller # {idx + 1} <span className="font-normal">Information</span></h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
               <div>
                 <input 
                   type="text"
-                  className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.firstName ? 'border-red-500' : ''}`} 
+                  className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.firstName ? 'border-red-500' : ''}`} 
                   placeholder="First name" 
                   value={t.firstName} 
                   onChange={e => handleTravellerChange(idx, 'firstName', e.target.value)}
@@ -272,7 +272,7 @@ export default function TravellersStep() {
               <div>
                 <input 
                   type="text"
-                  className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.lastName ? 'border-red-500' : ''}`} 
+                  className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.lastName ? 'border-red-500' : ''}`} 
                   placeholder="Last name" 
                   value={t.lastName} 
                   onChange={e => handleTravellerChange(idx, 'lastName', e.target.value)}
@@ -292,7 +292,7 @@ export default function TravellersStep() {
               <div>
                 <input 
                   type="email"
-                  className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.email ? 'border-red-500' : ''}`} 
+                  className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.email ? 'border-red-500' : ''}`} 
                   placeholder="E-mail" 
                   value={t.email} 
                   onChange={e => handleTravellerChange(idx, 'email', e.target.value)}
@@ -312,7 +312,7 @@ export default function TravellersStep() {
               <div>
                 <div className="flex gap-2">
                   <select 
-                    className={`border rounded-lg px-2 py-3 w-1/3 ${errors[idx]?.dateOfBirth ? 'border-red-500' : ''}`} 
+                    className={`border rounded-lg px-1 sm:px-2 py-2 sm:py-3 w-1/3 text-xs sm:text-sm ${errors[idx]?.dateOfBirth ? 'border-red-500' : ''}`} 
                     value={t.year} 
                     onChange={e => {
                       handleTravellerChange(idx, 'year', e.target.value);
@@ -408,7 +408,7 @@ export default function TravellersStep() {
               </div>
               <div>
                 <select 
-                  className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.country ? 'border-red-500' : ''}`} 
+                  className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.country ? 'border-red-500' : ''}`} 
                   value={t.country} 
                   onChange={e => handleTravellerChange(idx, 'country', e.target.value)}
                 >
@@ -422,7 +422,7 @@ export default function TravellersStep() {
               <div>
                 <input 
                   type="tel"
-                  className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.mobile ? 'border-red-500' : ''}`} 
+                  className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.mobile ? 'border-red-500' : ''}`} 
                   placeholder="Mobile phone" 
                   value={t.mobile} 
                   onChange={e => handleTravellerChange(idx, 'mobile', e.target.value)}
@@ -444,7 +444,7 @@ export default function TravellersStep() {
               <div className="font-bold mb-2">Packages & Surf level</div>
               <div className="text-gray-600 text-sm mb-2">We ask for surf level to be able to accommodate you in suitable courses (not for Essential package/Surf Guiding). This can always be changed during your stay.</div>
               <select 
-                className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.surfLevel ? 'border-red-500' : ''}`} 
+                className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.surfLevel ? 'border-red-500' : ''}`} 
                 value={t.surfLevel} 
                 onChange={e => handleTravellerChange(idx, 'surfLevel', e.target.value)}
               >
@@ -459,7 +459,7 @@ export default function TravellersStep() {
               <div className="font-bold mb-2">Gender</div>
               <div className="text-gray-600 text-sm mb-2">We request gender information to help us organize room arrangements with care and consideration for all guests to feel welcomed.</div>
               <select 
-                className={`border rounded-lg px-4 py-3 w-full ${errors[idx]?.gender ? 'border-red-500' : ''}`} 
+                className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full text-sm sm:text-base ${errors[idx]?.gender ? 'border-red-500' : ''}`} 
                 value={t.gender} 
                 onChange={e => handleTravellerChange(idx, 'gender', e.target.value)}
               >
@@ -473,35 +473,35 @@ export default function TravellersStep() {
           </div>
         ))}
       </div>
-      <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
+      <div className="w-full lg:w-[25%] flex-shrink-0 mt-4 sm:mt-6 lg:mt-8">
         <BookingSummary />
         {/* Total amount to pay section below add giftcard */}
-        <div className="mb-6 mt-4 space-y-2">
+        <div className="mb-4 sm:mb-6 mt-3 sm:mt-4 space-y-2">
           {summary.discount > 0 && (
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="text-gray-600">Discount ({appliedDiscount}%)</span>
               <span className="text-green-600 font-semibold">-EUR {summary.discount}</span>
             </div>
           )}
           <div className="flex justify-between items-center">
-            <span className="text-base font-medium">Total amount to pay</span>
-            <span className="text-lg font-bold">EUR {summary.total}</span>
+            <span className="text-sm sm:text-base font-medium">Total amount to pay</span>
+            <span className="text-base sm:text-lg font-bold">EUR {summary.total}</span>
           </div>
         </div>
         {/* Discount code toggle */}
-        <div className="mb-4">
+        <div className="mb-3 sm:mb-4">
           <div className={`transition-all ${showDiscount ? 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]' : 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]'}`}>
             <button
-              className="w-full flex items-center justify-between px-6 py-4 font-semibold text-lg focus:outline-none rounded-2xl"
+              className="w-full flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base lg:text-lg focus:outline-none rounded-2xl"
               onClick={() => setShowDiscount(v => !v)}
             >
               Add discount code
-              <span className="text-base text-gray-500">{showDiscount ? '▲' : '▼'}</span>
+              <span className="text-sm sm:text-base text-gray-500">{showDiscount ? '▲' : '▼'}</span>
             </button>
             {showDiscount && (
-              <div className="px-4 pb-4">
+              <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                 <input
-                  className="border border-lapoint-border rounded-xl px-4 py-3 w-full mb-2 bg-[#FFFCF5] mt-4"
+                  className="border border-lapoint-border rounded-xl px-3 sm:px-4 py-2 sm:py-3 w-full mb-2 bg-[#FFFCF5] mt-3 sm:mt-4 text-sm sm:text-base"
                   placeholder="Enter discount code"
                   value={localDiscountCode}
                   onChange={handleDiscountCodeChange}
@@ -512,65 +512,65 @@ export default function TravellersStep() {
                   }}
                 />
                 {discountMessage && (
-                  <p className={`text-sm mb-2 ${discountMessage.includes("applied") ? "text-green-600" : "text-red-600"}`}>
+                  <p className={`text-xs sm:text-sm mb-2 ${discountMessage.includes("applied") ? "text-green-600" : "text-red-600"}`}>
                     {discountMessage}
                   </p>
                 )}
                 {appliedDiscount > 0 && (
-                  <p className="text-sm mb-2 text-green-600 font-semibold">
+                  <p className="text-xs sm:text-sm mb-2 text-green-600 font-semibold">
                     {appliedDiscount}% discount applied!
                   </p>
                 )}
                 <button 
-                  className="w-full bg-lapoint-red text-white font-bold text-base py-3 rounded-full flex items-center justify-center gap-2"
+                  className="w-full bg-lapoint-red text-white font-bold text-sm sm:text-base py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2"
                   onClick={handleApplyDiscount}
                 >
-                  ADD CODE <span className="text-2xl leading-none">+</span>
+                  ADD CODE <span className="text-xl sm:text-2xl leading-none">+</span>
                 </button>
               </div>
             )}
           </div>
         </div>
         {/* Giftcard toggle */}
-        <div className="mb-4">
+        <div className="mb-3 sm:mb-4">
           <div className={`transition-all ${showGiftcard ? 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]' : 'rounded-2xl border border-lapoint-border bg-[#FFFCF5]'}`}>
             <button
-              className="w-full flex items-center justify-between px-6 py-4 font-semibold text-lg focus:outline-none rounded-2xl"
+              className="w-full flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base lg:text-lg focus:outline-none rounded-2xl"
               onClick={() => setShowGiftcard(v => !v)}
             >
               Add giftcard
-              <span className="text-base text-gray-500">{showGiftcard ? '▲' : '▼'}</span>
+              <span className="text-sm sm:text-base text-gray-500">{showGiftcard ? '▲' : '▼'}</span>
             </button>
             {showGiftcard && (
-              <div className="px-4 pb-4">
+              <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                 <input
-                  className="border border-lapoint-border rounded-xl px-4 py-3 w-full mb-4 bg-[#FFFCF5] mt-4"
+                  className="border border-lapoint-border rounded-xl px-3 sm:px-4 py-2 sm:py-3 w-full mb-2 bg-[#FFFCF5] mt-3 sm:mt-4 text-sm sm:text-base"
                   placeholder="Enter giftcard code"
                   value={giftcard}
                   onChange={e => setGiftcard(e.target.value)}
                 />
-                <button className="w-full bg-lapoint-red text-white font-bold text-base py-3 rounded-full flex items-center justify-center gap-2">
-                  ADD GIFTCARD <span className="text-2xl leading-none">+</span>
+                <button className="w-full bg-lapoint-red text-white font-bold text-sm sm:text-base py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2">
+                  ADD GIFTCARD <span className="text-xl sm:text-2xl leading-none">+</span>
                 </button>
               </div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 mb-2 mt-4">
-          <input type="checkbox" className="form-checkbox h-5 w-5" />
-          <span className="text-sm">I hereby accept <a href="#" className="underline text-lapoint-red">Lapoints terms & conditions</a> and <a href="#" className="underline text-lapoint-red">privacy policy</a>.</span>
+        <div className="flex items-start gap-2 mb-2 mt-3 sm:mt-4">
+          <input type="checkbox" className="form-checkbox h-4 w-4 sm:h-5 sm:w-5 mt-1 flex-shrink-0" />
+          <span className="text-xs sm:text-sm">I hereby accept <a href="#" className="underline text-lapoint-red">Lapoints terms & conditions</a> and <a href="#" className="underline text-lapoint-red">privacy policy</a>.</span>
         </div>
-        <div className="flex items-center gap-2 mb-4">
-          <input type="checkbox" className="form-checkbox h-5 w-5" />
-          <span className="text-sm">I want to join the <a href="#" className="underline text-lapoint-red">Lapoint Membership community</a> (it's free!) and receive specialized discounts and benefits via email. You can unsubscribe at any time.</span>
+        <div className="flex items-start gap-2 mb-3 sm:mb-4">
+          <input type="checkbox" className="form-checkbox h-4 w-4 sm:h-5 sm:w-5 mt-1 flex-shrink-0" />
+          <span className="text-xs sm:text-sm">I want to join the <a href="#" className="underline text-lapoint-red">Lapoint Membership community</a> (it's free!) and receive specialized discounts and benefits via email. You can unsubscribe at any time.</span>
         </div>
         {/* Payment buttons and info */}
-        <div className="mb-4">
-          <button className="w-full font-bold text-base py-3 rounded-xl mb-4 flex items-center justify-center gap-2 transition-colors bg-white text-lapoint-red border border-lapoint-red disabled:opacity-50 disabled:cursor-not-allowed" type="button" disabled={!formComplete} onClick={handlePaymentNavigation}>
-            PAY DEPOSIT EUR 300 <span className="text-2xl">→</span>
+        <div className="mb-3 sm:mb-4">
+          <button className="w-full font-bold text-sm sm:text-base py-2.5 sm:py-3 rounded-xl mb-3 sm:mb-4 flex items-center justify-center gap-2 transition-colors bg-white text-lapoint-red border border-lapoint-red disabled:opacity-50 disabled:cursor-not-allowed" type="button" disabled={!formComplete} onClick={handlePaymentNavigation}>
+            PAY DEPOSIT EUR 300 <span className="text-xl sm:text-2xl">→</span>
           </button>
-          <button className="w-full font-bold text-base py-3 rounded-xl mb-4 flex items-center justify-center gap-2 transition-colors bg-lapoint-red text-white disabled:opacity-50 disabled:cursor-not-allowed" type="button" disabled={!formComplete} onClick={handlePaymentNavigation}>
-            PAY IN FULL EUR {summary.total} <span className="text-2xl">→</span>
+          <button className="w-full font-bold text-sm sm:text-base py-2.5 sm:py-3 rounded-xl mb-3 sm:mb-4 flex items-center justify-center gap-2 transition-colors bg-lapoint-red text-white disabled:opacity-50 disabled:cursor-not-allowed" type="button" disabled={!formComplete} onClick={handlePaymentNavigation}>
+            PAY IN FULL EUR {summary.total} <span className="text-xl sm:text-2xl">→</span>
           </button>
           {Object.keys(errors).length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">

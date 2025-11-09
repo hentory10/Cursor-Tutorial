@@ -1495,10 +1495,10 @@ export default function RoomStep() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
-      <div className="w-full md:w-[70%] py-8">
-        <h2 className="text-2xl font-bold mb-2">Select your room type</h2>
-        <div className="text-gray-500 mb-8 text-base">Price add-on per room for the duration</div>
+    <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 min-h-screen max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="w-full lg:w-[70%] py-4 sm:py-6 lg:py-8">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">Select your room type</h2>
+        <div className="text-gray-500 mb-4 sm:mb-6 lg:mb-8 text-sm sm:text-base">Price add-on per room for the duration</div>
         {/* Debug info - remove after testing */}
         <div className="mb-4 p-2 bg-yellow-100 border border-yellow-400 rounded text-sm">
           <strong>Debug Info:</strong><br/>
@@ -1528,15 +1528,15 @@ export default function RoomStep() {
             `Booked: ${amlalRoomAvailability.bookedBeds}, Available: ${amlalRoomAvailability.availableBeds}, Fully Booked: ${amlalRoomAvailability.isFullyBooked}` 
             : 'NULL'} | Loading: {loadingAmlalAvailability ? 'YES' : 'NO'}
         </div>
-        <div className="w-full mb-8">
-          <div className="rounded-full bg-yellow-300 px-6 py-2 text-lapoint-dark text-[12px] font-normal" style={{ width: '100%', fontWeight: 400 }}>
+        <div className="w-full mb-4 sm:mb-6 lg:mb-8">
+          <div className="rounded-full bg-yellow-300 px-3 sm:px-6 py-2 text-lapoint-dark text-[10px] sm:text-xs font-normal" style={{ width: '100%', fontWeight: 400 }}>
             <span className="font-bold">10% discount</span> &bull; For bookings with arrival dates until 11 Aug Including 4 day packages or multiple weeks. &bull; Use code: <span className="font-bold">TAGHAZOUT10</span>
           </div>
         </div>
         {/* Oubaha Rooms */}
-        <div className="mb-10">
-          <h3 className="text-xl font-bold mb-4">DRIFTLINE OUBAHA</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="mb-6 sm:mb-10">
+          <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">DRIFTLINE OUBAHA</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {oubahaRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
               const isTripleRoom = room.id === "2";
@@ -1670,7 +1670,7 @@ export default function RoomStep() {
               return (
                 <div key={room.id} className={`bg-white border border-lapoint-border rounded-xl overflow-hidden flex flex-col relative ${isRoomLoading ? 'opacity-90' : ''}`}>
                   {/* Banner - grey when unavailable, red when available */}
-                  <div className={`absolute top-0 left-0 w-full ${isFullyBooked ? 'bg-gray-500' : 'bg-lapoint-red'} text-white text-center py-1 text-[10px] font-semibold z-10 rounded-t-xl`}>
+                  <div className={`absolute top-0 left-0 w-full ${isFullyBooked ? 'bg-gray-500' : 'bg-lapoint-red'} text-white text-center py-1 text-[9px] sm:text-[10px] font-semibold z-10 rounded-t-xl`}>
                     {isRoomLoading
                       ? 'Checking availability...' 
                       : isFullyBooked 
@@ -1684,23 +1684,23 @@ export default function RoomStep() {
                     width={600} 
                     height={400} 
                     quality={100} 
-                    className={`w-full h-56 object-cover ${isFullyBooked || isLoading ? 'opacity-50' : ''}`} 
+                    className={`w-full h-48 sm:h-56 object-cover ${isFullyBooked || isLoading ? 'opacity-50' : ''}`} 
                   />
-                  <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                     <div>
-                      <div className="font-semibold text-base mb-2">{room.name}</div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className={`font-bold ${
+                      <div className="font-semibold text-sm sm:text-base mb-2">{room.name}</div>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+                        <div className={`font-bold text-sm sm:text-base ${
                           room.price === 0 && isFullyBooked 
                             ? 'text-gray-500' 
                             : 'text-lapoint-red'
                         }`}>+ EUR {room.price}</div>
-                        <div className="text-sm text-gray-600">Number of people</div>
+                        <div className="text-xs sm:text-sm text-gray-600">Number of people</div>
                     </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
                       <button
                         type="button"
-                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                          className="bg-white border border-gray-300 text-black px-3 sm:px-4 py-2 rounded text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-gray-50 w-full sm:w-auto"
                           onClick={() => toggleRoomExpansion(room.id)}
                         >
                           View room
@@ -1714,7 +1714,7 @@ export default function RoomStep() {
                             />
                           </svg>
                         </button>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 justify-end sm:justify-start">
                           <button
                             type="button"
                             className="w-8 h-8 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
@@ -1724,7 +1724,7 @@ export default function RoomStep() {
                       >
                         –
                       </button>
-                      <span className="w-8 text-center font-bold">{assigned}</span>
+                      <span className="w-8 text-center font-bold text-sm sm:text-base">{assigned}</span>
                       <button
                         type="button"
                             className="w-8 h-8 rounded-full border border-lapoint-red text-lapoint-red flex items-center justify-center text-xl disabled:opacity-50 bg-white disabled:cursor-not-allowed"
@@ -1745,9 +1745,9 @@ export default function RoomStep() {
         </div>
         
         {/* Bigdi Rooms */}
-        <div className="mb-10">
-          <h3 className="text-xl font-bold mb-4">DRIFTLINE BIGDI</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="mb-6 sm:mb-10">
+          <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">DRIFTLINE BIGDI</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {bigdiRooms.map((room) => {
               const assigned = roomAssignments[room.id] || 0;
               const isAyourRoom = room.id === "6";
@@ -1948,7 +1948,7 @@ export default function RoomStep() {
           </div>
         </div>
       </div>
-      <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
+      <div className="w-full lg:w-[25%] flex-shrink-0 mt-4 sm:mt-6 lg:mt-8">
         <BookingSummary buttonLabel="ADD-ON SELECTION →" onButtonClick={handleNext} />
       </div>
 
@@ -1961,33 +1961,33 @@ export default function RoomStep() {
         const currentIndex = carouselIndices[expandedRoomId] || 0;
         
         return (
-          <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={() => setExpandedRoomId(null)}
-          >
             <div 
-              className="bg-[#FAF9F6] rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+              className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setExpandedRoomId(null)}
+            >
+            <div 
+              className="bg-[#FAF9F6] rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col m-2 sm:m-4"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header with Room Name and Price */}
-              <div className="pt-6 pb-4 bg-[#FAF9F6]">
+              <div className="pt-4 sm:pt-6 pb-3 sm:pb-4 bg-[#FAF9F6]">
                 <div className="flex items-center w-full">
                   {/* Left Spacer to match arrow space */}
-                  <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 ml-2 sm:ml-4 mr-2 sm:mr-3"></div>
                   
                   {/* Header Content - Matches image container width */}
                   <div className="flex-1 flex items-start justify-between">
                     <div className="flex-1">
-                      <h2 className="text-xl font-semibold text-gray-900 mb-1">{room.name}</h2>
-                      <div className="text-base font-semibold text-gray-900">+ EUR {room.price}</div>
+                      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">{room.name}</h2>
+                      <div className="text-sm sm:text-base font-semibold text-gray-900">+ EUR {room.price}</div>
                     </div>
                     <button
                       type="button"
                       onClick={() => setExpandedRoomId(null)}
-                      className="p-2 hover:bg-white/50 rounded-full transition-colors ml-4"
+                      className="p-1.5 sm:p-2 hover:bg-white/50 rounded-full transition-colors ml-2 sm:ml-4"
                       aria-label="Close modal"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                         <path 
                           d="M18 6L6 18M6 6L18 18" 
                           stroke="currentColor" 
@@ -2001,7 +2001,7 @@ export default function RoomStep() {
                   </div>
                   
                   {/* Right Spacer to match arrow space */}
-                  <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 mr-2 sm:mr-4 ml-2 sm:ml-3"></div>
                 </div>
               </div>
 
@@ -2018,23 +2018,23 @@ export default function RoomStep() {
                           e.stopPropagation();
                           navigateCarousel(expandedRoomId, 'prev');
                         }}
-                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 ml-4 mr-3"
+                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 ml-2 sm:ml-4 mr-2 sm:mr-3"
                         aria-label="Previous image"
                       >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                           <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </button>
                     )}
                     {images.length > 1 && currentIndex === 0 && (
-                      <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 ml-2 sm:ml-4 mr-2 sm:mr-3"></div>
                     )}
                     
                     {/* Carousel Images Container */}
-                    <div className="relative flex-1 h-96 overflow-hidden bg-[#FAF9F6] rounded-xl">
+                    <div className="relative flex-1 h-64 sm:h-80 md:h-96 overflow-hidden bg-[#FAF9F6] rounded-xl">
                       <div className="flex transition-transform duration-300 ease-in-out h-full" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
                         {images.map((img, idx) => (
-                          <div key={idx} className="min-w-full h-96 relative flex-shrink-0 rounded-xl overflow-hidden">
+                          <div key={idx} className="min-w-full h-64 sm:h-80 md:h-96 relative flex-shrink-0 rounded-xl overflow-hidden">
                             <Image
                               src={img}
                               alt={`${room.name} - Image ${idx + 1}`}
@@ -2050,7 +2050,7 @@ export default function RoomStep() {
                       
                       {/* Image Indicators */}
                       {images.length > 1 && (
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 items-center">
+                        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 items-center">
                           {images.map((_, idx) => (
                             <button
                               key={idx}
@@ -2061,7 +2061,7 @@ export default function RoomStep() {
                               }}
                               className={`rounded-full transition-all ${
                                 idx === currentIndex 
-                                  ? 'bg-lapoint-red h-2 w-6' 
+                                  ? 'bg-lapoint-red h-2 w-5 sm:w-6' 
                                   : 'bg-[#E8E6E0] hover:bg-[#D4D2CC] h-2 w-2'
                               }`}
                               aria-label={`Go to image ${idx + 1}`}
@@ -2079,16 +2079,16 @@ export default function RoomStep() {
                           e.stopPropagation();
                           navigateCarousel(expandedRoomId, 'next');
                         }}
-                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 mr-4 ml-3"
+                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 mr-2 sm:mr-4 ml-2 sm:ml-3"
                         aria-label="Next image"
                       >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                           <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </button>
                     )}
                     {images.length > 1 && currentIndex === images.length - 1 && (
-                      <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 mr-2 sm:mr-4 ml-2 sm:ml-3"></div>
                     )}
                   </div>
                 )}
@@ -2096,23 +2096,23 @@ export default function RoomStep() {
                 {/* Room Description - Matches image width */}
                 <div className="flex items-center w-full bg-[#FAF9F6]">
                   {/* Left Spacer to match arrow space */}
-                  <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 ml-2 sm:ml-4 mr-2 sm:mr-3"></div>
                   
                   {/* Description Container - Matches image container width */}
-                  <div className="flex-1 pt-4 pb-6">
+                  <div className="flex-1 pt-3 sm:pt-4 pb-4 sm:pb-6">
                     {loadingDescriptions[expandedRoomId] ? (
-                      <div className="text-gray-500 text-sm">Loading description...</div>
+                      <div className="text-gray-500 text-xs sm:text-sm">Loading description...</div>
                     ) : roomDescriptions[expandedRoomId] ? (
-                      <p className="text-gray-800 text-sm leading-relaxed">
+                      <p className="text-gray-800 text-xs sm:text-sm leading-relaxed">
                         {roomDescriptions[expandedRoomId]}
                       </p>
                     ) : (
-                      <p className="text-gray-500 text-sm">No description available.</p>
+                      <p className="text-gray-500 text-xs sm:text-sm">No description available.</p>
                     )}
                   </div>
                   
                   {/* Right Spacer to match arrow space */}
-                  <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 mr-2 sm:mr-4 ml-2 sm:ml-3"></div>
                 </div>
               </div>
             </div>
