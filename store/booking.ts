@@ -42,7 +42,7 @@ type State = {
   paymentType: 'deposit' | 'full';
   setPaymentType: (t: 'deposit' | 'full') => void;
   forceFullPayment: boolean;
-  summary: { subtotal: number; insurance: number; total: number };
+  summary: { subtotal: number; insurance: number; discount: number; total: number };
   reset: () => void;
   duration: string;
   setDuration: (d: string) => void;
@@ -54,6 +54,10 @@ type State = {
   clearAddOnData: () => void;
   clearTravellerData: () => void;
   clearDateData: () => void;
+  discountCode: string;
+  setDiscountCode: (code: string) => void;
+  appliedDiscount: number;
+  setAppliedDiscount: (discount: number) => void;
 };
 
 export const useStore = create<State>((set, get) => ({
@@ -151,7 +155,7 @@ export const useStore = create<State>((set, get) => ({
   paymentType: 'deposit',
   setPaymentType: (t) => set({ paymentType: t }),
   forceFullPayment: false,
-  summary: { subtotal: 0, insurance: 0, total: 0 },
+  summary: { subtotal: 0, insurance: 0, discount: 0, total: 0 },
   reset: () => set({
     selectedPackage: null,
     surfLevel: '',
@@ -163,7 +167,9 @@ export const useStore = create<State>((set, get) => ({
     insurance: false,
     paymentType: 'deposit',
     forceFullPayment: false,
-    summary: { subtotal: 0, insurance: 0, total: 0 },
+    summary: { subtotal: 0, insurance: 0, discount: 0, total: 0 },
+    discountCode: '',
+    appliedDiscount: 0,
   }),
   duration: '1w',
   setDuration: (d) => set({ duration: d }),
@@ -185,6 +191,10 @@ export const useStore = create<State>((set, get) => ({
   clearAddOnData: () => set({ selectedAddOns: [], addOnCounts: {} }),
   clearTravellerData: () => set({ travellers: [{ name: '' }] }),
   clearDateData: () => set({ arrivalDate: '' }),
+  discountCode: '',
+  setDiscountCode: (code) => set({ discountCode: code }),
+  appliedDiscount: 0,
+  setAppliedDiscount: (discount) => set({ appliedDiscount: discount }),
 }));
 
 // Price calculation and forceFullPayment logic
@@ -214,7 +224,15 @@ useStore.subscribe((state) => {
     return sum;
   }, 0);
   let insurance = state.insurance ? Math.round(subtotal * 0.15) : 0;
-  let total = subtotal + insurance;
+  let subtotalWithInsurance = subtotal + insurance;
+  
+  // Apply discount (15% for code "TEST")
+  let discount = 0;
+  if (state.appliedDiscount > 0) {
+    discount = Math.round(subtotalWithInsurance * (state.appliedDiscount / 100));
+  }
+  
+  let total = subtotalWithInsurance - discount;
   // if (state.paymentType === 'deposit' && !state.forceFullPayment) {
   //   total = Math.round(total * 0.25);
   // }
@@ -232,12 +250,13 @@ useStore.subscribe((state) => {
   if (
     summary.subtotal !== subtotal ||
     summary.insurance !== insurance ||
+    summary.discount !== discount ||
     summary.total !== total ||
     forceFullPayment !== forceFull ||
     paymentType !== (forceFull ? 'full' : state.paymentType)
   ) {
     useStore.setState({
-      summary: { subtotal, insurance, total },
+      summary: { subtotal, insurance, discount, total },
       forceFullPayment: forceFull,
       paymentType: forceFull ? 'full' : state.paymentType,
     });

@@ -76,9 +76,35 @@ const bigdiRooms = [
   },
 ];
 
+// Image arrays for each room (carousel images)
+const roomImages: Record<string, string[]> = {
+  // Tamazirt room - Oubaha (ID: 1)
+  "1": ["/images/room1.jpg", "/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg", "/images/room5.jpg"],
+  // Triple room - Oubaha (ID: 2)
+  "2": ["/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg", "/images/room5.jpg", "/images/room6.jpg"],
+  // Double room - Oubaha (ID: 3)
+  "3": ["/images/room3.jpg", "/images/room4.jpg", "/images/room5.jpg", "/images/room6.jpg", "/images/room1.jpg"],
+  // Twin room - Oubaha (ID: 4)
+  "4": ["/images/room4.jpg", "/images/room5.jpg", "/images/room6.jpg", "/images/room1.jpg", "/images/room2.jpg"],
+  // Ayour room - Bigdi (ID: 6)
+  "6": ["/images/ayourroom.webp", "/images/room1.jpg", "/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg"],
+  // Tafokt room - Bigdi (ID: 7)
+  "7": ["/images/room1.jpg", "/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg", "/images/room5.jpg"],
+  // Akal room - Bigdi (ID: 9)
+  "9": ["/images/akalroom.webp", "/images/room1.jpg", "/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg"],
+  // Amlal room - Bigdi (ID: 10)
+  "10": ["/images/room2.jpg", "/images/room3.jpg", "/images/room4.jpg", "/images/room5.jpg", "/images/room6.jpg"],
+};
+
 export default function RoomStep() {
   const { selectedPackage, people: maxPeople, arrivalDate, roomAssignments, setRoomAssignments } = useStore();
   const router = useRouter();
+  
+  // State for expanded room and carousel
+  const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
+  const [carouselIndices, setCarouselIndices] = useState<Record<string, number>>({});
+  const [roomDescriptions, setRoomDescriptions] = useState<Record<string, string>>({});
+  const [loadingDescriptions, setLoadingDescriptions] = useState<Record<string, boolean>>({});
   
   // Suppress AbortError from being caught by React error boundary
   // This is necessary because React Strict Mode in development can catch promise rejections
@@ -176,6 +202,90 @@ export default function RoomStep() {
   const fetchAyourRequestRef = useRef<string | null>(null);
   const fetchAkalRequestRef = useRef<string | null>(null);
   const fetchAmlalRequestRef = useRef<string | null>(null);
+
+  // Function to fetch room description from database
+  const fetchRoomDescription = async (roomId: string) => {
+    if (roomDescriptions[roomId] || loadingDescriptions[roomId]) {
+      return; // Already fetched or currently loading
+    }
+
+    setLoadingDescriptions(prev => ({ ...prev, [roomId]: true }));
+    
+    try {
+      const response = await fetch(`/api/room-details?roomId=${roomId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setRoomDescriptions(prev => ({ ...prev, [roomId]: data.description || '' }));
+      }
+    } catch (error) {
+      console.error(`Error fetching room description for ${roomId}:`, error);
+    } finally {
+      setLoadingDescriptions(prev => ({ ...prev, [roomId]: false }));
+    }
+  };
+
+  // Function to toggle room expansion
+  const toggleRoomExpansion = (roomId: string) => {
+    console.log('Toggle room expansion clicked for room:', roomId, 'Current expanded:', expandedRoomId);
+    if (expandedRoomId === roomId) {
+      // Collapse current room
+      setExpandedRoomId(null);
+      console.log('Collapsing room:', roomId);
+    } else {
+      // Expand new room (collapses previous)
+      setExpandedRoomId(roomId);
+      console.log('Expanding room:', roomId);
+      // Initialize carousel index if not set
+      if (carouselIndices[roomId] === undefined) {
+        setCarouselIndices(prev => ({ ...prev, [roomId]: 0 }));
+      }
+      // Fetch room description if not already loaded
+      fetchRoomDescription(roomId);
+    }
+  };
+
+  // Function to navigate carousel
+  const navigateCarousel = (roomId: string, direction: 'prev' | 'next') => {
+    const images = roomImages[roomId] || [];
+    if (images.length === 0) return;
+
+    setCarouselIndices(prev => {
+      const currentIndex = prev[roomId] || 0;
+      let newIndex: number;
+      
+      if (direction === 'next') {
+        newIndex = (currentIndex + 1) % images.length;
+      } else {
+        newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+      }
+      
+      return { ...prev, [roomId]: newIndex };
+    });
+  };
+
+  // Handle Escape key to close modal and prevent body scroll when modal is open
+  useEffect(() => {
+    if (expandedRoomId) {
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+      
+      // Handle Escape key
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setExpandedRoomId(null);
+        }
+      };
+      
+      window.addEventListener('keydown', handleEscape);
+      
+      return () => {
+        document.body.style.overflow = 'unset';
+        window.removeEventListener('keydown', handleEscape);
+      };
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [expandedRoomId]);
 
   // Debug: Log component render and arrivalDate
   console.log('🚀 RoomStep component rendered. arrivalDate:', arrivalDate);
@@ -1590,12 +1700,18 @@ export default function RoomStep() {
                       <div className="flex items-center justify-between">
                       <button
                         type="button"
-                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isFullyBooked || isLoading || isRoomLoading}
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                          onClick={() => toggleRoomExpansion(room.id)}
                         >
                           View room
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path 
+                              d="M3 4.5L6 7.5L9 4.5" 
+                              stroke="currentColor" 
+                              strokeWidth="1.5" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </button>
                         <div className="flex items-center gap-2">
@@ -1788,12 +1904,18 @@ export default function RoomStep() {
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
-                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={!shouldShowAsAvailable || isLoading || isRoomLoading}
+                          className="bg-white border border-gray-300 text-black px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
+                          onClick={() => toggleRoomExpansion(room.id)}
                         >
                           View room
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path 
+                              d="M3 4.5L6 7.5L9 4.5" 
+                              stroke="currentColor" 
+                              strokeWidth="1.5" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </button>
                         <div className="flex items-center gap-2">
@@ -1829,6 +1951,174 @@ export default function RoomStep() {
       <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
         <BookingSummary buttonLabel="ADD-ON SELECTION →" onButtonClick={handleNext} />
       </div>
+
+      {/* Room Details Modal Popup */}
+      {expandedRoomId && (() => {
+        const room = [...oubahaRooms, ...bigdiRooms].find(r => r.id === expandedRoomId);
+        if (!room) return null;
+        
+        const images = roomImages[expandedRoomId] || [];
+        const currentIndex = carouselIndices[expandedRoomId] || 0;
+        
+        return (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setExpandedRoomId(null)}
+          >
+            <div 
+              className="bg-[#FAF9F6] rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header with Room Name and Price */}
+              <div className="pt-6 pb-4 bg-[#FAF9F6]">
+                <div className="flex items-center w-full">
+                  {/* Left Spacer to match arrow space */}
+                  <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                  
+                  {/* Header Content - Matches image container width */}
+                  <div className="flex-1 flex items-start justify-between">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-semibold text-gray-900 mb-1">{room.name}</h2>
+                      <div className="text-base font-semibold text-gray-900">+ EUR {room.price}</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRoomId(null)}
+                      className="p-2 hover:bg-white/50 rounded-full transition-colors ml-4"
+                      aria-label="Close modal"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path 
+                          d="M18 6L6 18M6 6L18 18" 
+                          stroke="currentColor" 
+                          strokeWidth="3" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                          className="text-lapoint-red"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {/* Right Spacer to match arrow space */}
+                  <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                </div>
+              </div>
+
+              {/* Modal Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto">
+                {/* Image Carousel */}
+                {images.length > 0 && (
+                  <div className="flex items-center w-full bg-[#FAF9F6]">
+                    {/* Left Navigation Arrow */}
+                    {images.length > 1 && currentIndex > 0 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateCarousel(expandedRoomId, 'prev');
+                        }}
+                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 ml-4 mr-3"
+                        aria-label="Previous image"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                    {images.length > 1 && currentIndex === 0 && (
+                      <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                    )}
+                    
+                    {/* Carousel Images Container */}
+                    <div className="relative flex-1 h-96 overflow-hidden bg-[#FAF9F6] rounded-xl">
+                      <div className="flex transition-transform duration-300 ease-in-out h-full" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                        {images.map((img, idx) => (
+                          <div key={idx} className="min-w-full h-96 relative flex-shrink-0 rounded-xl overflow-hidden">
+                            <Image
+                              src={img}
+                              alt={`${room.name} - Image ${idx + 1}`}
+                              fill
+                              sizes="100vw"
+                              className="object-cover rounded-xl"
+                              quality={100}
+                              priority={idx === 0}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Image Indicators */}
+                      {images.length > 1 && (
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 items-center">
+                          {images.map((_, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCarouselIndices(prev => ({ ...prev, [expandedRoomId]: idx }));
+                              }}
+                              className={`rounded-full transition-all ${
+                                idx === currentIndex 
+                                  ? 'bg-lapoint-red h-2 w-6' 
+                                  : 'bg-[#E8E6E0] hover:bg-[#D4D2CC] h-2 w-2'
+                              }`}
+                              aria-label={`Go to image ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Right Navigation Arrow */}
+                    {images.length > 1 && currentIndex < images.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateCarousel(expandedRoomId, 'next');
+                        }}
+                        className="bg-lapoint-red hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all z-10 flex-shrink-0 mr-4 ml-3"
+                        aria-label="Next image"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                    {images.length > 1 && currentIndex === images.length - 1 && (
+                      <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Room Description - Matches image width */}
+                <div className="flex items-center w-full bg-[#FAF9F6]">
+                  {/* Left Spacer to match arrow space */}
+                  <div className="w-10 h-10 flex-shrink-0 ml-4 mr-3"></div>
+                  
+                  {/* Description Container - Matches image container width */}
+                  <div className="flex-1 pt-4 pb-6">
+                    {loadingDescriptions[expandedRoomId] ? (
+                      <div className="text-gray-500 text-sm">Loading description...</div>
+                    ) : roomDescriptions[expandedRoomId] ? (
+                      <p className="text-gray-800 text-sm leading-relaxed">
+                        {roomDescriptions[expandedRoomId]}
+                      </p>
+                    ) : (
+                      <p className="text-gray-500 text-sm">No description available.</p>
+                    )}
+                  </div>
+                  
+                  {/* Right Spacer to match arrow space */}
+                  <div className="w-10 h-10 flex-shrink-0 mr-4 ml-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 } 

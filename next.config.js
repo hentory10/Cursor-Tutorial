@@ -3,6 +3,12 @@ const nextConfig = {
   // Server Actions are available by default in Next.js 14+
   // No need for experimental.serverActions configuration
   
+  // Image configuration
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    domains: [],
+  },
+  
   // Configure headers to allow unsafe-eval in development (for React dev overlay)
   async headers() {
     // Only apply CSP in production, or use a more permissive policy in development
@@ -14,7 +20,7 @@ const nextConfig = {
           headers: [
             {
               key: 'Content-Security-Policy',
-              value: "script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com https://js.stripe.com; object-src 'none'; base-uri 'self'; connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api.stripe.com; frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://js.stripe.com;",
+              value: "script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com https://js.stripe.com; object-src 'none'; base-uri 'self'; connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api.stripe.com; frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://js.stripe.com; img-src 'self' data: blob:;",
             },
           ],
         },

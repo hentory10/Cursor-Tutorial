@@ -28,8 +28,16 @@ export default function CheckoutLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="w-full flex items-center justify-center pt-4">
-        <Image src="/images/LOGO-CHECKOUT.webp" alt="Logo" width={70} height={70} priority />
+      <div className="w-full flex items-center justify-center pt-4 pb-2">
+        <Image 
+          src="/images/LOGO-CHECKOUT.webp" 
+          alt="Logo" 
+          width={70} 
+          height={70} 
+          priority 
+          className="object-contain"
+          style={{ display: 'block' }}
+        />
       </div>
       <div className="w-full max-w-7xl mx-auto pb-2">
         {showBackArrow && (

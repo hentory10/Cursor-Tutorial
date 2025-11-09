@@ -18,11 +18,12 @@ const surfLevels = ["Beginner", "Intermediate", "Advanced"];
 const genders = ["Male", "Female", "Other"];
 
 export default function TravellersStep() {
-  const { people, summary, setTraveller } = useStore();
+  const { people, summary, setTraveller, discountCode, setDiscountCode, appliedDiscount, setAppliedDiscount } = useStore();
   const router = useRouter();
   const [showDiscount, setShowDiscount] = useState(false);
   const [showGiftcard, setShowGiftcard] = useState(false);
-  const [discountCode, setDiscountCode] = useState("");
+  const [localDiscountCode, setLocalDiscountCode] = useState(discountCode || "");
+  const [discountMessage, setDiscountMessage] = useState("");
   const [giftcard, setGiftcard] = useState("");
   // State for all travellers
   const [travellers, setTravellers] = useState(() => Array.from({ length: people }, () => ({
@@ -49,6 +50,13 @@ export default function TravellersStep() {
       return prev.slice(0, people);
     });
   }, [people]);
+
+  // Sync discount code from store
+  React.useEffect(() => {
+    if (discountCode && !localDiscountCode) {
+      setLocalDiscountCode(discountCode);
+    }
+  }, [discountCode]);
   // Validation functions
   const validateEmail = (email: string): boolean => {
     if (!email) return false;
@@ -208,6 +216,32 @@ export default function TravellersStep() {
     });
     router.push('/checkout/6-payment');
   };
+
+  // Handle discount code application
+  const handleApplyDiscount = () => {
+    const code = localDiscountCode.trim().toUpperCase();
+    if (code === "TEST") {
+      setDiscountCode(code);
+      setAppliedDiscount(15); // 15% discount
+      setDiscountMessage("Discount code applied! 15% discount has been applied to your booking.");
+      setLocalDiscountCode(code);
+    } else if (code === "") {
+      setDiscountMessage("Please enter a discount code.");
+    } else {
+      setDiscountMessage("Invalid discount code. Please try again.");
+      setDiscountCode("");
+      setAppliedDiscount(0);
+    }
+  };
+
+  // Clear discount message when user starts typing
+  const handleDiscountCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalDiscountCode(e.target.value);
+    if (discountMessage) {
+      setDiscountMessage("");
+    }
+  };
+  
   return (
     <div className="flex flex-col md:flex-row gap-12 min-h-screen max-w-7xl mx-auto px-4">
       <div className="w-full md:w-[70%] py-8">
@@ -442,9 +476,17 @@ export default function TravellersStep() {
       <div className="w-full md:w-[25%] flex-shrink-0 mt-8">
         <BookingSummary />
         {/* Total amount to pay section below add giftcard */}
-        <div className="flex justify-between items-center mb-6 mt-4">
-          <span className="text-base font-medium">Total amount to pay</span>
-          <span className="text-lg font-bold">EUR {summary.total}</span>
+        <div className="mb-6 mt-4 space-y-2">
+          {summary.discount > 0 && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-600">Discount ({appliedDiscount}%)</span>
+              <span className="text-green-600 font-semibold">-EUR {summary.discount}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="text-base font-medium">Total amount to pay</span>
+            <span className="text-lg font-bold">EUR {summary.total}</span>
+          </div>
         </div>
         {/* Discount code toggle */}
         <div className="mb-4">
@@ -459,12 +501,30 @@ export default function TravellersStep() {
             {showDiscount && (
               <div className="px-4 pb-4">
                 <input
-                  className="border border-lapoint-border rounded-xl px-4 py-3 w-full mb-4 bg-[#FFFCF5] mt-4"
+                  className="border border-lapoint-border rounded-xl px-4 py-3 w-full mb-2 bg-[#FFFCF5] mt-4"
                   placeholder="Enter discount code"
-                  value={discountCode}
-                  onChange={e => setDiscountCode(e.target.value)}
+                  value={localDiscountCode}
+                  onChange={handleDiscountCodeChange}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleApplyDiscount();
+                    }
+                  }}
                 />
-                <button className="w-full bg-lapoint-red text-white font-bold text-base py-3 rounded-full flex items-center justify-center gap-2">
+                {discountMessage && (
+                  <p className={`text-sm mb-2 ${discountMessage.includes("applied") ? "text-green-600" : "text-red-600"}`}>
+                    {discountMessage}
+                  </p>
+                )}
+                {appliedDiscount > 0 && (
+                  <p className="text-sm mb-2 text-green-600 font-semibold">
+                    {appliedDiscount}% discount applied!
+                  </p>
+                )}
+                <button 
+                  className="w-full bg-lapoint-red text-white font-bold text-base py-3 rounded-full flex items-center justify-center gap-2"
+                  onClick={handleApplyDiscount}
+                >
                   ADD CODE <span className="text-2xl leading-none">+</span>
                 </button>
               </div>
