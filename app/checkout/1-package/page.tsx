@@ -95,17 +95,17 @@ export default function PackageStep() {
                     {/* description removed per request */}
                     <div className="text-lapoint-red font-bold text-sm sm:text-base">From EUR {pkg.price}</div>
                   </div>
-                  <div className="flex items-center gap-2 sm:ml-auto flex-wrap">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 sm:ml-auto w-full sm:w-auto">
                     <button
                       type="button"
-                      className="btn-outline flex items-center gap-2 px-3 sm:px-6 py-2 text-xs sm:text-sm md:text-base font-semibold border-2 rounded-xl transition-all w-full sm:w-fit"
+                      className="btn-outline flex items-center justify-center gap-2 px-3 sm:px-6 py-2 text-xs sm:text-sm md:text-base font-semibold border-2 rounded-xl transition-all w-auto sm:w-auto whitespace-nowrap"
                       onClick={() => setOpenIncluded(openIncluded === pkg.id ? null : pkg.id)}
                       aria-pressed={openIncluded === pkg.id}
                     >
                       What's included
                       <span className={`transition-transform ${openIncluded === pkg.id ? 'rotate-180' : ''}`}>▾</span>
                     </button>
-                    <div className="flex items-center gap-2 ml-auto sm:ml-0">
+                    <div className="flex items-center justify-end sm:justify-start gap-2 w-auto sm:w-auto ml-auto sm:ml-0">
                       <button
                         type="button"
                         className="w-8 h-8 rounded-full border border-gray-300 text-gray-400 flex items-center justify-center text-xl disabled:opacity-50"
